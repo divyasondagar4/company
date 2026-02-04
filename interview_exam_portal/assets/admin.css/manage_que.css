@@ -1,0 +1,433 @@
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.main-container {
+    margin-left: 260px;
+    padding: 20px;
+    max-width: calc(100vw - 280px);
+    overflow-x: hidden;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.page-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.header-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(255,255,255,0.2);
+    padding: 15px 25px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card .number {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-card .label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.content-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: none;
+    overflow-x: auto;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.table-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+    color: white;
+}
+
+/* Custom DataTable Styling */
+.dataTables_wrapper {
+    padding: 0;
+}
+
+.dataTables_filter {
+    margin-bottom: 20px;
+}
+
+.dataTables_filter input {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.dataTables_filter input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.dataTables_length select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: 0 10px;
+}
+
+table.dataTable {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+}
+
+table.dataTable thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 15px 10px;
+    border: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+table.dataTable thead th:first-child {
+    border-top-left-radius: 12px;
+    width: 60px;
+}
+
+table.dataTable thead th:nth-child(2) {
+    width: 100px;
+}
+
+table.dataTable thead th:nth-child(3) {
+    width: 180px;
+}
+
+table.dataTable thead th:nth-child(4),
+table.dataTable thead th:nth-child(5),
+table.dataTable thead th:nth-child(6),
+table.dataTable thead th:nth-child(7) {
+    width: 110px;
+}
+
+table.dataTable thead th:nth-child(8) {
+    width: 90px;
+}
+
+table.dataTable thead th:last-child {
+    border-top-right-radius: 12px;
+    width: 160px;
+}
+
+table.dataTable tbody tr {
+    transition: all 0.3s ease;
+    background: white;
+}
+
+table.dataTable tbody tr:hover {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f5f3ff 100%);
+    transform: scale(1.01);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+table.dataTable tbody td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    font-size: 0.85rem;
+    color: #4a5568;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.id-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.category-badge {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.question-text {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.option-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.answer-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    color: white;
+}
+
+/* Toast Notification */
+.toast-container-custom {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast-custom {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 350px;
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid #ef4444;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-content strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.toast-content span {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.dataTables_info {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.dataTables_paginate {
+    margin-top: 20px;
+}
+
+.paginate_button {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 8px 15px !important;
+    margin: 0 4px !important;
+    background: white !important;
+    color: #4a5568 !important;
+    transition: all 0.3s ease !important;
+}
+
+.paginate_button:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border-color: #667eea !important;
+}
+
+.paginate_button.current {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border-color: #667eea !important;
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        margin-left: 0;
+        max-width: 100vw;
+        padding: 10px;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    
+    .content-card {
+        padding: 15px;
+        border-radius: 15px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+}

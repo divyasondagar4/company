@@ -1,0 +1,219 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Sidebar Container */
+.admin-sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 0;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/* Custom Scrollbar */
+.admin-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Logo Section */
+.admin-logo {
+    color: #fff;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 26px;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.admin-logo i {
+    font-size: 30px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Menu */
+.admin-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+}
+
+.admin-menu li {
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+.admin-menu li a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 16px 25px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-menu li a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transition: width 0.3s ease;
+    z-index: 0;
+}
+
+.admin-menu li a:hover::before {
+    width: 100%;
+}
+
+.admin-menu li a i {
+    font-size: 18px;
+    width: 25px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-menu li a span {
+    position: relative;
+    z-index: 1;
+}
+
+.admin-menu li a:hover {
+    color: white;
+    border-left-color: white;
+    padding-left: 30px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-menu li a.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: white;
+    font-weight: 600;
+}
+
+/* Logout button */
+.admin-menu li .logout-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 30px;
+    transition: all 0.3s ease;
+}
+
+.admin-menu li .logout-btn:hover {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-left-color: white;
+    box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+}
+
+.admin-menu li .logout-btn i {
+    animation: slideOut 0.5s ease-in-out infinite;
+}
+
+@keyframes slideOut {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(5px);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-260px);
+    }
+
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
+}
+
+/* Tooltip effect */
+.admin-menu li a {
+    position: relative;
+}
+
+.admin-menu li a:hover {
+    transform: translateX(5px);
+}
+
+/* Icon animations on hover */
+.admin-menu li a:hover i {
+    transform: scale(1.2) rotate(5deg);
+    transition: transform 0.3s ease;
+}
+
+/* Section divider */
+.menu-section {
+    padding: 15px 25px 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Badge for notifications */
+.menu-badge {
+    background: #ff4d4d;
+    color: white;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: auto;
+    font-weight: 600;
+}
+
