@@ -1,0 +1,27 @@
+body {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.main-container {
+    margin-left:250px;
+    padding:2rem;
+}
+.table-container{
+    background:white;
+    padding:2rem;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+.table-responsive{
+    overflow-x:auto; /* ✅ horizontal scroll */
+}
+table th{
+    background:#4e73df;
+    color:white;
+    text-align:center;
+}
+table td{
+    text-align:center;
+}
+.correct{color:green;font-weight:bold;}
+.wrong{color:red;font-weight:bold;}
