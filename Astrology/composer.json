@@ -1,0 +1,14 @@
+{
+    "require": {
+        "dompdf/dompdf": "^3.1",
+        "phpoffice/phpspreadsheet": "*"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0.30"
+        },
+        "allow-plugins": {
+            "thecodingmachine/safe": true
+        }
+    }
+}
