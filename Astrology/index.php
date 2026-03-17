@@ -4,11 +4,25 @@ require_once 'header.php';
 
 // Get exactly today's panchang
 $today = date('Y-m-d');
-$stmt = $conn->prepare("SELECT * FROM panchang WHERE panchang_date = ? LIMIT 1");
-$stmt->bind_param("s", $today);
-$stmt->execute();
-$panchangResult = $stmt->get_result();
-$todayPanchang = $panchangResult ? $panchangResult->fetch_assoc() : null;
+$todayPanchang = null;
+
+$isFallback = false;
+
+if (!empty($currentLocation)) {
+    $stmt = $conn->prepare("SELECT * FROM panchang WHERE location = ? AND panchang_date = ? LIMIT 1");
+    $stmt->bind_param("ss", $currentLocation, $today);
+    $stmt->execute();
+    $todayPanchang = $stmt->get_result()->fetch_assoc();
+}
+
+if(!$todayPanchang) {
+    // Fallback to first available entry for the day
+    $res = $conn->query("SELECT * FROM panchang WHERE panchang_date = '$today' ORDER BY location ASC LIMIT 1");
+    if($res && $res->num_rows > 0) {
+        $todayPanchang = $res->fetch_assoc();
+        $isFallback = !empty($currentLocation); // Only mark as fallback if they actually had a location selected
+    }
+}
 
 // Get upcoming muhurats
 $stmt = $conn->prepare("SELECT * FROM muhurat WHERE muhurat_date >= ? ORDER BY muhurat_date ASC LIMIT 4");
@@ -28,8 +42,41 @@ $galleryResult = $conn->query("SELECT * FROM gallery ORDER BY id DESC LIMIT 6");
 // Subscription check
 $canViewFullToday = isLoggedIn() && (isAdmin() || (isset($_SESSION['user_id']) && isSubscribed($conn, $_SESSION['user_id'])));
 
-// Helper for null display
-function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlspecialchars(trim((string)$val)) : '<span class="text-muted">N/A</span>'; }
+function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlspecialchars(trim((string)$val)) : '<span class="text-muted">' . t('na') . '</span>'; }
+
+function pv_time($val) {
+    if (!$val || trim((string)$val) === '' || $val === '00:00:00') return '<span class="text-muted">' . t('na') . '</span>';
+    $val = trim((string)$val);
+    
+    
+    $prefix_map = [
+        'સવાર' => 'AM',
+        'બપોર' => 'PM',
+        'સાંજ' => 'PM',
+        'રાત્રે' => 'PM',
+        'મધ્યરાત્રિ' => 'AM'
+    ];
+    
+    foreach($prefix_map as $gu => $ap) {
+        if(strpos($val, $gu) !== false) {
+            $cleaned = trim(str_replace($gu, '', $val));
+            if(!preg_match('/(AM|PM)/i', $cleaned)) {
+                $val = $cleaned . ' ' . $ap;
+            } else {
+                $val = $cleaned;
+            }
+            break;
+        }
+    }
+    
+    $ts = strtotime($val);
+    if ($ts === false) {
+        $val_clean = preg_replace('/[^\x20-\x7E]/', '', $val);
+        $ts = strtotime($val_clean);
+    }
+    
+    return $ts ? date('h:i A', $ts) : htmlspecialchars($val);
+}
 ?>
 
 <!-- Hero Section — Light to Dark Gradient with Golden Om Animation -->
@@ -48,35 +95,38 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
           <div class="hero-divine-line" style="width:100px; height:4px;"></div>
           <p style="font-size:1.15rem; font-weight:500; line-height:1.8; max-width:550px;"><?php echo t('hero_desc'); ?></p>
           <div class="mt-4 d-flex flex-wrap gap-3">
-            <a href="<?php echo SITE_URL; ?>/panchang.php" class="btn-sacred btn-lg" style="padding:0.9rem 2.5rem; font-size:1rem;">
+            <a href="<?php echo SITE_URL; ?>/panchang" class="btn-sacred btn-lg" style="padding:0.9rem 2.5rem; font-size:1rem;">
               <i class="fas fa-sun nav-icon-spin"></i> <?php echo t('view_panchang'); ?>
             </a>
-            <a href="<?php echo SITE_URL; ?>/muhurat.php" class="btn-sacred-outline btn-lg" style="color:var(--chandan-light); border-color:var(--chandan-light); padding:0.85rem 2.5rem; font-size:1rem;">
+            <a href="<?php echo SITE_URL; ?>/muhurat" class="btn-sacred-outline btn-lg" style="color:var(--chandan-light); border-color:var(--chandan-light); padding:0.85rem 2.5rem; font-size:1rem;">
               <i class="fas fa-calendar-check nav-icon-spin"></i> <?php echo t('muhurat_calendar'); ?>
             </a>
           </div>
         </div>
       </div>
+      <!-- Mobile Om Glow (visible on small screens) -->
+      <div class="col-12 d-lg-none">
+        <div class="hero-mobile-om text-center">
+          <div class="hero-mobile-om-inner">
+            <div class="hero-mobile-glow"></div>
+            <span class="hero-mobile-om-symbol">ॐ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Celestial Universe (hidden on mobile) -->
       <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
-        <!-- Celestial Universe Container -->
         <div id="hero-universe-container" style="position:relative; width:450px; height:450px; display:flex; justify-content:center; align-items:center;">
-          <!-- Nebulas -->
           <div class="nebula nebula-1"></div>
           <div class="nebula nebula-2"></div>
           <div class="nebula nebula-3"></div>
-
-          <!-- Stars injected via JS -->
           <div class="stars" id="stars"></div>
-
-          <!-- Central Glowing Om -->
           <div class="om-container">
               <div class="energy-wave"></div>
               <div class="energy-wave"></div>
               <div class="energy-wave"></div>
               <div class="om-text">ॐ</div>
           </div>
-
-          <!-- Outer Solar System -->
           <div class="solar-system">
               <div class="orbit orbit-sun">
                   <div class="planet-container pc-sun"><div class="planet sun"></div></div>
@@ -127,36 +177,53 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
       <p><?php echo t('panchang_for'); ?> <?php echo date('d F Y'); ?></p>
     </div>
 
+    <?php if($isFallback): ?>
+    <div class="alert alert-sacred-outline py-2 px-3 mb-4 mx-auto" style="max-width:800px; border-color:var(--chandan-gold); color:var(--chandan-gold); background:rgba(197,151,59,0.05); font-size:0.9rem; border-radius:10px;">
+        <i class="fas fa-info-circle me-2"></i><?php echo t('showing_data_for'); ?> <strong><?php echo htmlspecialchars($todayPanchang['location']); ?></strong> (<?php echo t('selected_location_no_data'); ?>)
+    </div>
+    <?php endif; ?>
+
     <?php if($todayPanchang): ?>
     <div class="today-panchang-widget glow-sacred">
-      <div class="widget-header d-flex align-items-center flex-wrap gap-2" style="background:var(--sacred-maroon); color:var(--chandan-gold); padding:0.8rem 1.2rem; border-radius:12px 12px 0 0; border-bottom:2px solid var(--chandan-gold);">
-        <div class="d-flex align-items-center me-auto">
-          <i class="fas fa-calendar-day me-2"></i>
-          <span style="font-weight:600;"><?php echo t_date($todayPanchang['panchang_date']); ?></span>
+      <div class="widget-header d-flex align-items-center justify-content-between flex-wrap gap-3" style="background:var(--sacred-maroon); color:var(--chandan-gold); padding:1rem 1.2rem; border-radius:12px 12px 0 0; border-bottom:2px solid var(--chandan-gold);">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+          <i class="fas fa-calendar-day me-1"></i>
+          <span style="font-weight:600; font-size:1.1rem;"><?php echo t_date($todayPanchang['panchang_date']); ?></span>
+          <span class="badge" style="background:rgba(255,255,255,0.1); font-size:0.8rem; border:1px solid rgba(197,151,59,0.3); color:var(--chandan-gold); padding:0.4rem 0.8rem;">
+            <i class="fas fa-map-marker-alt me-1"></i><?php echo htmlspecialchars($todayPanchang['location']); ?>
+          </span>
         </div>
-        <span style="font-size:0.85rem; font-family:'Poppins',sans-serif; background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:4px; border:1px solid rgba(197,151,59,0.3);">
+        <div class="vikram-samvat-badge" style="font-size:0.85rem; font-family:'Poppins',sans-serif; background:rgba(255,255,255,0.1); padding:4px 12px; border-radius:20px; border:1px solid rgba(197,151,59,0.3);">
           <?php echo t('vikram_samvat'); ?>: <?php echo pv($todayPanchang['vikram_samvat']); ?>
-        </span>
+        </div>
       </div>
       <div class="widget-body">
         <!-- Always visible — Basic Info -->
         <div class="panchang-grid">
+          <?php if(!empty($todayPanchang['sunrise']) && $todayPanchang['sunrise'] !== '00:00:00'): ?>
           <div class="panchang-item">
             <div class="item-label"><i class="fas fa-sun me-1"></i> <?php echo t('sunrise'); ?></div>
-            <div class="item-value"><?php echo ($todayPanchang['sunrise']) ? date('h:i A', strtotime($todayPanchang['sunrise'])) : 'N/A'; ?></div>
+            <div class="item-value"><?php echo pv_time($todayPanchang['sunrise']); ?></div>
           </div>
+          <?php endif; ?>
+          <?php if(!empty($todayPanchang['sunset']) && $todayPanchang['sunset'] !== '00:00:00'): ?>
           <div class="panchang-item">
             <div class="item-label"><i class="fas fa-moon me-1"></i> <?php echo t('sunset'); ?></div>
-            <div class="item-value"><?php echo ($todayPanchang['sunset']) ? date('h:i A', strtotime($todayPanchang['sunset'])) : 'N/A'; ?></div>
+            <div class="item-value"><?php echo pv_time($todayPanchang['sunset']); ?></div>
           </div>
+          <?php endif; ?>
+          <?php if(!empty($todayPanchang['tithi'])): ?>
           <div class="panchang-item">
             <div class="item-label"><i class="fas fa-star me-1"></i> <?php echo t('tithi'); ?></div>
             <div class="item-value"><?php echo t(pv($todayPanchang['tithi'])); ?></div>
           </div>
+          <?php endif; ?>
+          <?php if(!empty($todayPanchang['nakshatra'])): ?>
           <div class="panchang-item">
             <div class="item-label"><i class="fas fa-star-half-alt me-1"></i> <?php echo t('nakshatra'); ?></div>
             <div class="item-value"><?php echo t(pv($todayPanchang['nakshatra'])); ?></div>
           </div>
+          <?php endif; ?>
         </div>
 
         <?php if($canViewFullToday): ?>
@@ -173,45 +240,50 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
         </div>
 
         <div class="row mt-4">
+          <?php if($todayPanchang['rahu_start'] && $todayPanchang['rahu_start'] !== '00:00:00' && $todayPanchang['rahu_end'] && $todayPanchang['rahu_end'] !== '00:00:00'): ?>
           <div class="col-md-4">
             <div class="panchang-item" style="border-left-color:var(--sacred-kumkum);">
               <div class="item-label" style="color:var(--sacred-kumkum);"><i class="fas fa-exclamation-triangle me-1"></i> <?php echo t('rahu_kaal'); ?></div>
-              <div class="item-value"><?php echo ($todayPanchang['rahu_start'] && $todayPanchang['rahu_end']) ? date('h:i A', strtotime($todayPanchang['rahu_start'])) . ' - ' . date('h:i A', strtotime($todayPanchang['rahu_end'])) : 'N/A'; ?></div>
+              <div class="item-value"><?php echo pv_time($todayPanchang['rahu_start']) . ' - ' . pv_time($todayPanchang['rahu_end']); ?></div>
             </div>
           </div>
+          <?php endif; ?>
+          <?php if($todayPanchang['gulika_start'] && $todayPanchang['gulika_start'] !== '00:00:00' && $todayPanchang['gulika_end'] && $todayPanchang['gulika_end'] !== '00:00:00'): ?>
           <div class="col-md-4">
             <div class="panchang-item" style="border-left-color:var(--sacred-kumkum);">
               <div class="item-label" style="color:var(--sacred-kumkum);"><i class="fas fa-exclamation-circle me-1"></i> <?php echo t('gulika_kaal'); ?></div>
-              <div class="item-value"><?php echo ($todayPanchang['gulika_start'] && $todayPanchang['gulika_end']) ? date('h:i A', strtotime($todayPanchang['gulika_start'])) . ' - ' . date('h:i A', strtotime($todayPanchang['gulika_end'])) : 'N/A'; ?></div>
+              <div class="item-value"><?php echo pv_time($todayPanchang['gulika_start']) . ' - ' . pv_time($todayPanchang['gulika_end']); ?></div>
             </div>
           </div>
+          <?php endif; ?>
+          <?php if($todayPanchang['yama_start'] && $todayPanchang['yama_start'] !== '00:00:00' && $todayPanchang['yama_end'] && $todayPanchang['yama_end'] !== '00:00:00'): ?>
           <div class="col-md-4">
             <div class="panchang-item" style="border-left-color:var(--sacred-kumkum);">
               <div class="item-label" style="color:var(--sacred-kumkum);"><i class="fas fa-clock me-1"></i> <?php echo t('yama_gandam'); ?></div>
-              <div class="item-value"><?php echo ($todayPanchang['yama_start'] && $todayPanchang['yama_end']) ? date('h:i A', strtotime($todayPanchang['yama_start'])) . ' - ' . date('h:i A', strtotime($todayPanchang['yama_end'])) : 'N/A'; ?></div>
+              <div class="item-value"><?php echo pv_time($todayPanchang['yama_start']) . ' - ' . pv_time($todayPanchang['yama_end']); ?></div>
             </div>
           </div>
+          <?php endif; ?>
         </div>
         <?php endif; ?>
 
         <div class="text-center mt-4">
+          <div class="btn-group-sacred">
           <?php if(!$canViewFullToday): 
             if(!isLoggedIn()):
           ?>
-                <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred"><i class="fas fa-lock me-1"></i> <?php echo t('login_view_full'); ?></a>
+                <a href="<?php echo SITE_URL; ?>/login.php?redirect=panchang-details&date=<?php echo $todayPanchang['panchang_date']; ?>" class="btn-sacred"><i class="fas fa-lock me-1"></i> <?php echo t('login_view_full'); ?></a>
           <?php else: ?>
-                <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred" style="background:#4A3728; color:var(--chandan-gold); border-color:var(--chandan-gold);"><i class="fas fa-crown me-1"></i> <?php echo t('subscribe_view_full'); ?></a>
+                <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred"><i class="fas fa-crown me-1"></i> <?php echo t('subscribe_view_full'); ?></a>
           <?php 
               endif;
             else: 
           ?>
-              <a href="<?php echo SITE_URL; ?>/panchang-details.php?date=<?php echo $todayPanchang['panchang_date']; ?>" class="btn-sacred">
-                <i class="fas fa-eye"></i> <?php echo t('view_full_details'); ?>
-              </a>
-              <a href="<?php echo SITE_URL; ?>/download-pdf.php?id=<?php echo $todayPanchang['id']; ?>" class="btn-sacred-outline ms-2">
-                <i class="fas fa-download"></i> <?php echo t('download_pdf'); ?>
+              <a href="<?php echo SITE_URL; ?>/panchang-details.php?date=<?php echo $todayPanchang['panchang_date']; ?>" class="btn-sacred w-100 py-2">
+                <i class="fas fa-eye me-1"></i> <?php echo t('view_full_details'); ?>
               </a>
           <?php endif; ?>
+          </div>
         </div>
       </div>
     </div>
@@ -220,7 +292,7 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
       <div class="sacred-card d-inline-block px-5 py-4">
         <i class="fas fa-calendar-xmark fa-3x mb-3" style="color:var(--chandan-gold);"></i>
         <p class="mb-0"><?php echo t('no_panchang_today'); ?></p>
-        <a href="<?php echo SITE_URL; ?>/panchang.php" class="btn-sacred mt-3"><?php echo t('browse_all'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/panchang" class="btn-sacred mt-3"><?php echo t('browse_all'); ?></a>
       </div>
     </div>
     <?php endif; ?>
@@ -237,19 +309,10 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
     </div>
 
     <div class="row g-4">
-      <?php if(!isLoggedIn()): ?>
-        <div class="col-12 text-center">
-          <div class="sacred-card py-5">
-            <i class="fas fa-lock fa-3x mb-3" style="color:var(--chandan-gold);"></i>
-            <h4><?php echo t('login_to_view_muhurats'); ?></h4>
-            <p class="text-muted"><?php echo t('auspicious_timings_desc'); ?></p>
-            <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred mt-2"><?php echo t('login_now'); ?></a>
-          </div>
-        </div>
-      <?php elseif($muhuratResult && $muhuratResult->num_rows > 0): ?>
+      <?php if($muhuratResult && $muhuratResult->num_rows > 0): ?>
         <?php 
           $mCount = 0;
-          $maxShow = $canViewFullToday ? 100 : 4; 
+          $maxShow = 4; // ALWAYS SHOW 4 RECENT MUHURATS
           while($m = $muhuratResult->fetch_assoc()): 
             $mCount++;
             if($mCount > $maxShow) break;
@@ -277,8 +340,8 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
               </p>
               <p style="font-size:0.85rem;">
                 <i class="fas fa-clock me-1"></i>
-                <?php echo $m['start_time'] ? date('h:i A', strtotime($m['start_time'])) : ''; ?>
-                <?php echo $m['end_time'] ? ' - ' . date('h:i A', strtotime($m['end_time'])) : ''; ?>
+                <?php echo ($m['start_time'] && $m['start_time'] !== '00:00:00') ? date('h:i A', strtotime($m['start_time'])) : ''; ?>
+                <?php echo ($m['end_time'] && $m['end_time'] !== '00:00:00') ? ' - ' . date('h:i A', strtotime($m['end_time'])) : ''; ?>
               </p>
             </div>
           </div>
@@ -291,22 +354,13 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
     </div>
 
     <div class="text-center mt-4">
-      <?php if($canViewFullToday): ?>
-        <a href="<?php echo SITE_URL; ?>/muhurat-calendar.php" class="btn-sacred">
+        <a href="<?php echo SITE_URL; ?>/muhurat-calendar" class="btn-sacred">
           <i class="fas fa-calendar"></i> <?php echo t('view_full_calendar'); ?>
         </a>
-      <?php else: ?>
-        <div class="sacred-card d-inline-block px-4 py-3" style="background:rgba(255,255,255,0.7); border:1px dashed var(--chandan-gold);">
-          <p class="mb-2" style="font-weight:600; color:var(--dark-wood);"><i class="fas fa-lock me-1"></i> <?php echo t('unlock_all_muhurats'); ?></p>
-          <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred btn-sm"><?php echo t('login_to_unlock'); ?></a>
-        </div>
-      <?php endif; ?>
     </div>
   </div>
 </section>
 
-<!-- Subscribe Section — Aesthetic Light Brown & Golden Gradient -->
-<!-- Subscribe Section — Aesthetic Light Brown & Golden Gradient -->
 <section class="subscribe-section-home" style="padding: 30px 0;">
   <div class="container">
     <div class="row align-items-center justify-content-center">
@@ -320,7 +374,7 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
           <p class="animate-on-scroll" style="color:#5c4b3c; max-width:550px; margin:0 auto 1.5rem; font-size:1.1rem; line-height:1.8; font-weight:500;">
             <?php echo t('premium_access_desc'); ?>
           </p>
-          <a href="<?php echo SITE_URL; ?>/panchang.php" class="btn-sacred btn-lg animate-on-scroll" style="background: #4A3728; color: var(--chandan-gold); padding:0.9rem 3rem; font-size:1.05rem; border: 1px solid var(--chandan-gold); box-shadow: 0 4px 15px rgba(197,151,59,0.3);">
+          <a href="<?php echo SITE_URL; ?>/panchang" class="btn-sacred btn-lg animate-on-scroll" style="background: #4A3728; color: var(--chandan-gold); padding:0.9rem 3rem; font-size:1.05rem; border: 1px solid var(--chandan-gold); box-shadow: 0 4px 15px rgba(197,151,59,0.3);">
             <i class="fas fa-sun"></i> <?php echo t('view_full_panchang'); ?>
           </a>
 
@@ -353,7 +407,7 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
               </div>
             </div>
           </div>
-          <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred btn-lg animate-on-scroll" style="background: #4A3728; color: var(--chandan-gold); padding:0.9rem 3rem; font-size:1.05rem; border: 1px solid var(--chandan-gold); box-shadow: 0 4px 15px rgba(197,151,59,0.3);">
+          <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred btn-lg animate-on-scroll" style="background: #4A3728; color: var(--chandan-gold); padding:0.9rem 3rem; font-size:1.05rem; border: 1px solid var(--chandan-gold); box-shadow: 0 4px 15px rgba(197,151,59,0.3);">
             <i class="fas fa-crown"></i> <?php echo t('subscribe_now'); ?>
           </a>
         <?php endif; ?>
@@ -374,16 +428,10 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
 
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <?php if(!isLoggedIn()): ?>
-          <div class="text-center p-5 sacred-card">
-            <i class="fas fa-lock fa-3x mb-3" style="color:var(--chandan-gold);"></i>
-            <h4><?php echo t('login_to_view_festivals'); ?></h4>
-            <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred mt-2"><?php echo t('login_now'); ?></a>
-          </div>
-        <?php elseif($festivalResult && $festivalResult->num_rows > 0): ?>
+        <?php if($festivalResult && $festivalResult->num_rows > 0): ?>
           <?php 
             $fCount = 0;
-            $maxShowF = $canViewFullToday ? 100 : 3;
+            $maxShowF = 3; // ALWAYS SHOW 3 RECENT FESTIVALS
             while($f = $festivalResult->fetch_assoc()): 
               $fCount++;
               if($fCount > $maxShowF) break;
@@ -401,14 +449,6 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
             </div>
           </div>
           <?php endwhile; ?>
-          
-          <?php if(!$canViewFullToday && $festivalResult->num_rows > 3): ?>
-            <div class="text-center mt-4 p-4 border-dashed rounded" style="border: 2px dashed rgba(197,151,59,0.3); background: rgba(255,255,255,0.4);">
-              <i class="fas fa-lock fa-2x mb-2" style="color:var(--chandan-gold);"></i>
-              <h5><?php echo t('unlock_all_festivals'); ?></h5>
-              <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred mt-2"><?php echo t('subscribe_to_unlock'); ?></a>
-            </div>
-          <?php endif; ?>
         <?php else: ?>
           <p class="text-center text-muted"><?php echo t('festival_coming_soon'); ?></p>
         <?php endif; ?>
@@ -416,7 +456,7 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
     </div>
 
     <div class="text-center mt-3">
-      <a href="<?php echo SITE_URL; ?>/festival-calendar.php" class="btn-sacred-outline">
+      <a href="<?php echo SITE_URL; ?>/festival-calendar" class="btn-sacred-outline">
         <i class="fas fa-calendar"></i> <?php echo t('view_full_calendar'); ?>
       </a>
     </div>
@@ -452,7 +492,7 @@ function pv($val) { return ($val !== null && trim((string)$val) !== '') ? htmlsp
     </div>
 
     <div class="text-center mt-4">
-      <a href="<?php echo SITE_URL; ?>/gallery.php" class="btn-sacred-outline">
+      <a href="<?php echo SITE_URL; ?>/gallery" class="btn-sacred-outline">
         <i class="fas fa-images"></i> <?php echo t('view_full_gallery'); ?>
       </a>
     </div>

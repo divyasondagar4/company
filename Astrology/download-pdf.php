@@ -10,12 +10,12 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Check if user is logged in and subscribed
 if (!isLoggedIn()) {
-    header("Location: " . SITE_URL . "/login.php?redirect=download-pdf&id=$id");
+    header("Location: " . SITE_URL . "/login?redirect=download-pdf&id=$id");
     exit();
 }
 
 if (!isAdmin() && !isSubscribed($conn, $_SESSION['user_id'])) {
-    header("Location: " . SITE_URL . "/subscribe.php?msg=subscription_required");
+    header("Location: " . SITE_URL . "/subscribe?msg=subscription_required");
     exit();
 }
 
@@ -27,121 +27,153 @@ $result = $stmt->get_result();
 $panchang = $result->fetch_assoc();
 
 if (!$panchang) {
-    header("Location: " . SITE_URL . "/panchang.php?msg=no_data");
+    header("Location: " . SITE_URL . "/panchang?msg=no_data");
     exit();
 }
 
-// Generate HTML Content for PDF
+
+// PDF helper — safe value display
+$pv = function($val, $translate = false) {
+    if ($val === null || trim((string)$val) === '') return '---';
+    $v = trim((string)$val);
+    if ($translate) return htmlspecialchars(t($v));
+    return htmlspecialchars($v);
+};
+
+// Time parser for PDF
+$pt = function($val) {
+    if ($val === null || trim((string)$val) === '') return '---';
+    $val = trim((string)$val);
+    $prefix_map = ['સવાર'=>'AM','બપોર'=>'PM','સાંજ'=>'PM','રાત્રે'=>'PM','મધ્યરાત્રિ'=>'AM'];
+    foreach ($prefix_map as $gu => $ap) {
+        if (strpos($val, $gu) !== false) {
+            $cleaned = trim(str_replace($gu, '', $val));
+            $val = !preg_match('/(AM|PM)/i', $cleaned) ? $cleaned . ' ' . $ap : $cleaned;
+            break;
+        }
+    }
+    $ts = strtotime($val);
+    if ($ts === false) { $ts = strtotime(preg_replace('/[^\x20-\x7E]/', '', $val)); }
+    return $ts ? date('h:i A', $ts) : htmlspecialchars($val);
+};
+
 $dateStr = t_date($panchang['panchang_date']);
+$dateForFile = date('d_M_Y', strtotime($panchang['panchang_date']));
+
 $html = '
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Astro Panchang - ' . $dateStr . '</title>
+    <title>' . t('astro_panchang') . ' - ' . $dateStr . '</title>
     <style>
-        body { font-family: "Helvetica", "Arial", sans-serif; color: #333; line-height: 1.6; }
-        .header { text-align: center; border-bottom: 2px solid #C5973B; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { color: #5B1A18; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
-        .header p { color: #8C6239; margin: 5px 0 0; font-size: 14px; }
-        .section-title { background: #FEFCF4; color: #5B1A18; padding: 8px 12px; font-weight: bold; font-size: 16px; border-left: 4px solid #C5973B; margin-top: 20px; margin-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th, td { border: 1px solid #e0e0e0; padding: 10px 12px; font-size: 13px; }
-        th { background-color: #f9f9f9; text-align: left; width: 35%; color: #555; }
-        td { color: #222; }
-        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
-        .flex-container { width: 100%; }
-        .flex-half { width: 48%; display: inline-block; vertical-align: top; }
+        @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap");
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Noto Sans", "Noto Sans Gujarati", "Noto Sans Devanagari", sans-serif; 
+            color: #333; line-height: 1.5; font-size: 12px; padding: 20px; 
+        }
+        
+        .header { 
+            text-align: center; padding: 18px 10px 14px; margin-bottom: 16px;
+            background: #FDFBF0; border: 2px solid #5B1A18; border-radius: 8px;
+        }
+        .header h1 { color: #5B1A18; font-size: 22px; letter-spacing: 2px; margin-bottom: 4px; }
+        .header .subtitle { color: #8C6239; font-size: 11px; margin-bottom: 6px; }
+        .header .date-line { color: #5B1A18; font-size: 15px; font-weight: 700; }
+        .header .meta { color: #8C6239; font-size: 9px; margin-top: 4px; opacity: 0.8; }
+        
+        .section { 
+            margin-bottom: 12px; border: 1px solid #e5ddd0; border-radius: 6px; overflow: hidden; 
+        }
+        .section-title { 
+            background: #FEFCF4; color: #5B1A18; padding: 7px 12px; font-weight: 700; 
+            font-size: 13px; border-bottom: 2px solid #C5973B;
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 6px 10px; font-size: 11px; border-bottom: 1px solid #f0ebe3; }
+        th { background: #faf7f0; text-align: left; width: 32%; color: #5B1A18; font-weight: 600; }
+        td { color: #333; font-weight: 400; }
+        tr:last-child th, tr:last-child td { border-bottom: none; }
+        
+        .two-col { width: 100%; }
+        .two-col td { width: 50%; padding: 0; vertical-align: top; }
+        .two-col .col-inner { margin: 0 4px; }
+        
+        .badge-yes { color: #c0392b; font-weight: 700; }
+        .badge-no { color: #27ae60; }
+        .time-danger { color: #c0392b; }
+        
+        .footer { 
+            margin-top: 16px; text-align: center; font-size: 9px; color: #999; 
+            border-top: 1px solid #eee; padding-top: 8px; 
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>' . t('astro_panchang') . '</h1>
-        <p>' . t('divine_guide') . '</p>
-        <p><strong>' . $dateStr . '</strong></p>
+        <h1>☉ ' . t('astro_panchang') . '</h1>
+        <div class="subtitle">' . t('divine_guide') . '</div>
+        <div class="date-line">' . $dateStr . '</div>
+        <div class="meta">' . t('location') . ': ' . $pv($panchang['location']) . ' | ID: ' . $panchang['id'] . '</div>
     </div>
-    
-    <div class="section-title">' . t('daily_overview') . '</div>
-    <table>
-        <tr>
-            <th>' . t('sunrise') . ' / ' . t('sunset') . '</th>
-            <td>' . ($panchang['sunrise'] ? date('h:i A', strtotime($panchang['sunrise'])) : t('na')) . ' / ' . ($panchang['sunset'] ? date('h:i A', strtotime($panchang['sunset'])) : t('na')) . '</td>
-        </tr>
-        <tr>
-            <th>' . t('location') . '</th><td>' . ($panchang['location'] ?: t('na')) . '</td>
-        </tr>
-        <tr>
-            <th>' . t('vikram_samvat') . '</th><td>' . ($panchang['vikram_samvat'] ?: t('na')) . '</td>
-        </tr>
-        <tr>
-            <th>' . t('gujarati_month') . '</th><td>' . ($panchang['gujarati_month'] ? t($panchang['gujarati_month']) : t('na')) . '</td>
-        </tr>
-        <tr>
-            <th>' . t('ayan') . '</th><td>' . ($panchang['ayan'] ? t($panchang['ayan']) : t('na')) . '</td>
-        </tr>
-    </table>
 
-    <div class="section-title">' . t('panchang_elements') . '</div>
-    <table>
-        <tr>
-            <th>' . t('tithi') . '</th>
-            <td>' . ($panchang['tithi'] ? t($panchang['tithi']) : t('na')) . ' (' . t('end') . ': ' . ($panchang['tithi_end'] ?: t('na')) . ')</td>
-        </tr>
-        <tr>
-            <th>' . t('nakshatra') . '</th>
-            <td>' . ($panchang['nakshatra'] ? t($panchang['nakshatra']) : t('na')) . 
-            ' ( ' . t('start') . ': ' . ($panchang['nak_start'] ?: '---') . ' | ' . t('end') . ': ' . ($panchang['nak_end'] ?: '---') . ' )</td>
-        </tr>
-        <tr>
-            <th>' . t('yoga') . '</th>
-            <td>' . ($panchang['yoga'] ? t($panchang['yoga']) : t('na')) . ' (' . t('end') . ': ' . ($panchang['yoga_end'] ?: t('na')) . ')</td>
-        </tr>
-        <tr>
-            <th>' . t('karana') . '</th>
-            <td>' . ($panchang['karana'] ? t($panchang['karana']) : t('na')) . ' (' . t('end') . ': ' . ($panchang['karana_end'] ?: t('na')) . ')</td>
-        </tr>
-    </table>
+    <!-- Daily Overview -->
+    <div class="section">
+        <div class="section-title">☀ ' . t('solar_lunar_details') . '</div>
+        <table>
+            <tr><th>' . t('day') . '</th><td>' . $pv($panchang['day_name'], true) . ' (' . $pv($panchang['vara_no']) . ')</td></tr>
+            <tr><th>' . t('sunrise') . ' / ' . t('sunset') . '</th><td>' . $pt($panchang['sunrise']) . ' / ' . $pt($panchang['sunset']) . '</td></tr>
+            <tr><th>' . t('ayan') . '</th><td>' . $pv($panchang['ayan'], true) . ' (' . $pv($panchang['ayan_no']) . ')</td></tr>
+            <tr><th>' . t('gujarati_month') . '</th><td>' . $pv($panchang['gujarati_month'], true) . ' (' . $pv($panchang['gujarati_month_no']) . ')</td></tr>
+            <tr><th>' . t('vikram_samvat') . '</th><td>' . $pv($panchang['vikram_samvat']) . ' (' . $pv($panchang['year']) . '-' . $pv($panchang['month']) . ')</td></tr>
+        </table>
+    </div>
 
-    <div class="section-title">' . t('vichudo_panchak') . '</div>
-    <table>
-        <tr>
-            <th>' . t('vichudo') . '</th>
-            <td>' . ($panchang['vichudo'] ?: t('na')) . ' (' . t('start') . ': ' . ($panchang['vichudo_start'] ?: '---') . ' | ' . t('end') . ': ' . ($panchang['vichudo_end'] ?: '---') . ')</td>
-        </tr>
-        <tr>
-            <th>' . t('panchak') . '</th>
-            <td>' . t('start') . ': ' . ($panchang['panchak_start'] ?: '---') . ' | ' . t('end') . ': ' . ($panchang['panchak_end'] ?: '---') . '</td>
-        </tr>
-    </table>
+    <!-- Panchang Elements -->
+    <div class="section">
+        <div class="section-title">🕉 ' . t('panchang_elements') . '</div>
+        <table>
+            <tr><th>' . t('tithi') . ' (' . $pv($panchang['tithi_no']) . ')</th><td>' . $pv($panchang['tithi'], true) . '<br><small>' . t('end') . ': ' . $pv($panchang['tithi_end']) . '</small></td></tr>
+            <tr><th>' . t('nakshatra') . ' (' . $pv($panchang['nak_no']) . ')</th><td>' . $pv($panchang['nakshatra'], true) . '<br><small>' . t('start') . ': ' . $pv($panchang['nak_start']) . ' | ' . t('end') . ': ' . $pv($panchang['nak_end']) . '</small></td></tr>
+            <tr><th>' . t('yoga') . ' (' . $pv($panchang['yoga_no']) . ')</th><td>' . $pv($panchang['yoga'], true) . '<br><small>' . t('end') . ': ' . $pv($panchang['yoga_end']) . '</small></td></tr>
+            <tr><th>' . t('karana') . ' (' . $pv($panchang['karana_no']) . ')</th><td>' . $pv($panchang['karana'], true) . '<br><small>' . t('end') . ': ' . $pv($panchang['karana_end']) . '</small></td></tr>
+        </table>
+    </div>
 
-    <div class="section-title">' . t('inauspicious_timings') . '</div>
-    <table>
-        <tr>
-            <th style="color: #e74c3c;">' . t('rahu_kaal') . '</th>
-            <td>' . ($panchang['rahu_start'] && $panchang['rahu_end'] ? date('h:i A', strtotime($panchang['rahu_start'])) . ' - ' . date('h:i A', strtotime($panchang['rahu_end'])) : t('na')) . '</td>
-        </tr>
-        <tr>
-            <th style="color: #9b59b6;">' . t('gulika_kaal') . '</th>
-            <td>' . ($panchang['gulika_start'] && $panchang['gulika_end'] ? date('h:i A', strtotime($panchang['gulika_start'])) . ' - ' . date('h:i A', strtotime($panchang['gulika_end'])) : t('na')) . '</td>
-        </tr>
-        <tr>
-            <th style="color: #e67e22;">' . t('yama_gandam') . '</th>
-            <td>' . ($panchang['yama_start'] && $panchang['yama_end'] ? date('h:i A', strtotime($panchang['yama_start'])) . ' - ' . date('h:i A', strtotime($panchang['yama_end'])) : t('na')) . '</td>
-        </tr>
-    </table>
+    <!-- Inauspicious Timings -->
+    <div class="section">
+        <div class="section-title">⚠ ' . t('inauspicious_timings') . '</div>
+        <table>
+            <tr><th class="time-danger">' . t('rahu_kaal') . '</th><td>' . $pt($panchang['rahu_start']) . ' – ' . $pt($panchang['rahu_end']) . '</td></tr>
+            <tr><th style="color:#9b59b6;">' . t('gulika_kaal') . '</th><td>' . $pt($panchang['gulika_start']) . ' – ' . $pt($panchang['gulika_end']) . '</td></tr>
+            <tr><th style="color:#e67e22;">' . t('yama_gandam') . '</th><td>' . $pt($panchang['yama_start']) . ' – ' . $pt($panchang['yama_end']) . '</td></tr>
+        </table>
+    </div>
 
-    <div class="section-title">' . t('graha_position') . '</div>
-    <table>
-        <tr>
-            <th>' . t('sun_longitude') . '</th><td>' . ($panchang['sun_lon'] ? $panchang['sun_lon'] . '°' : t('na')) . '</td>
-        </tr>
-        <tr>
-            <th>' . t('moon_longitude') . '</th><td>' . ($panchang['moon_lon'] ? $panchang['moon_lon'] . '°' : t('na')) . '</td>
-        </tr>
-    </table>
+    <!-- Vichudo & Panchak -->
+    <div class="section">
+        <div class="section-title">⚡ ' . t('vichudo_panchak') . '</div>
+        <table>
+            <tr><th>' . t('vichudo') . '</th><td>' . ($panchang['vichudo'] === 'YES' ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">' . $pv($panchang['vichudo']) . '</span>') . '
+                ' . (($panchang['vichudo_start'] || $panchang['vichudo_end']) ? '<br><small>' . t('start') . ': ' . $pv($panchang['vichudo_start']) . ' | ' . t('end') . ': ' . $pv($panchang['vichudo_end']) . '</small>' : '') . '</td></tr>
+            <tr><th>' . t('panchak') . '</th><td>' . t('start') . ': ' . $pv($panchang['panchak_start']) . ' | ' . t('end') . ': ' . $pv($panchang['panchak_end']) . '</td></tr>
+        </table>
+    </div>
 
-    ' . ($panchang['details'] ? '<div class="section-title">' . t('details') . '</div><div style="padding:10px; border:1px solid #eee; font-size:13px; color:#444;">' . nl2br(htmlspecialchars($panchang['details'])) . '</div>' : '') . '
+    <!-- Graha Position -->
+    <div class="section">
+        <div class="section-title">🌍 ' . t('graha_position') . '</div>
+        <table>
+            <tr><th>' . t('sun_longitude') . '</th><td>' . $pv($panchang['sun_lon']) . '°</td></tr>
+            <tr><th>' . t('moon_longitude') . '</th><td>' . $pv($panchang['moon_lon']) . '°</td></tr>
+        </table>
+    </div>
+
+    ' . ($panchang['details'] ? '<div class="section"><div class="section-title">📋 ' . t('details') . '</div><div style="padding:8px 12px; font-size:11px; color:#555;">' . nl2br(htmlspecialchars($panchang['details'])) . '</div></div>' : '') . '
 
     <div class="footer">
         ' . t('generated_by') . ' ' . date("Y") . '<br>
@@ -150,24 +182,18 @@ $html = '
 
 </body>
 </html>';
-
-// Initialize Dompdf
+// Initialize Download pdf with Unicode support
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isRemoteEnabled', true);
+$options->set('defaultFont', 'Noto Sans');
 $dompdf = new Dompdf($options);
 
-// Load HTML
-$dompdf->loadHtml($html);
-
-// Set Paper Size
+$dompdf->loadHtml($html, 'UTF-8');
 $dompdf->setPaper('A4', 'portrait');
-
-// Render PDF
 $dompdf->render();
 
-// Output to Browser
-$filename = "Astro_Panchang_" . date('Y_m_d', strtotime($panchang['panchang_date'])) . ".pdf";
+$filename = "Astro_Panchang_" . $dateForFile . ".pdf";
 $dompdf->stream($filename, ["Attachment" => true]);
 exit();
 ?>

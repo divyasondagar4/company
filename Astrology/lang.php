@@ -1,24 +1,16 @@
 <?php
-// =============================================
-// Multi-Language Support — English, Hindi, Gujarati
-// =============================================
-
-// Set language from GET parameter or session
 if (isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'hi', 'gu'])) {
     $_SESSION['lang'] = $_GET['lang'];
 }
-$lang = $_SESSION['lang'] ?? 'gu'; // Default Gujarati
+$lang = $_SESSION['lang'] ?? 'en';
 
-// Language labels for switcher
 $langLabels = [
     'en' => 'English',
     'hi' => 'हिंदी',
     'gu' => 'ગુજરાતી'
 ];
 
-// Translation dictionary
 $translations = [
-    // ---- Navigation ----
     'astro_panchang' => ['en' => 'Astro Panchang', 'hi' => 'ज्योतिष पंचांग', 'gu' => 'જ્યોતિષ પંચાંગ'],
     'home' => ['en' => 'Home', 'hi' => 'होम', 'gu' => 'હોમ'],
     'panchang' => ['en' => 'Panchang', 'hi' => 'पंचांग', 'gu' => 'પંચાંગ'],
@@ -33,8 +25,10 @@ $translations = [
     'admin_panel' => ['en' => 'Admin Panel', 'hi' => 'एडमिन पैनल', 'gu' => 'એડમિન પેનલ'],
     'register' => ['en' => 'Register', 'hi' => 'रजिस्टर', 'gu' => 'રજિસ્ટર'],
     'subscribe' => ['en' => 'Subscribe', 'hi' => 'सब्सक्राइब', 'gu' => 'સબ્સ્ક્રાઇબ'],
+    'about' => ['en' => 'About', 'hi' => 'हमारे बारे में', 'gu' => 'અમારા વિશે'],
+    'book' => ['en' => 'Book', 'hi' => 'पुस्तक', 'gu' => 'પુસ્તક'],
+    'download' => ['en' => 'Download', 'hi' => 'डाउनलोड', 'gu' => 'ડાઉનલોડ'],
 
-    // ---- Hero ----
     'your_divine_guide' => ['en' => 'Your Divine Guide', 'hi' => 'आपका दिव्य मार्गदर्शक', 'gu' => 'તમારું દિવ્ય માર્ગદર્શન'],
     'astro_panchang' => ['en' => 'Astro Panchang', 'hi' => 'ज्योतिष पंचांग', 'gu' => 'જ્યોતિષ પંચાંગ'],
     'hero_desc' => [
@@ -45,7 +39,6 @@ $translations = [
     'view_panchang' => ['en' => 'View Panchang', 'hi' => 'पंचांग देखें', 'gu' => 'પંચાંગ જુઓ'],
     'muhurat_calendar' => ['en' => 'Muhurat Calendar', 'hi' => 'मुहूर्त कैलेंडर', 'gu' => 'મુહૂર્ત કેલેન્ડર'],
 
-    // ---- Panchang ----
     'todays_panchang' => ['en' => "Today's Panchang", 'hi' => 'आज का पंचांग', 'gu' => 'આજનું પંચાંગ'],
     'panchang_details' => ['en' => 'Panchang Details', 'hi' => 'पंचांग विवरण', 'gu' => 'પંચાંગ વિગતો'],
     'date' => ['en' => 'Date', 'hi' => 'तारीख', 'gu' => 'તારીખ'],
@@ -78,7 +71,6 @@ $translations = [
     'pdf' => ['en' => 'PDF', 'hi' => 'PDF', 'gu' => 'PDF'],
     'actions' => ['en' => 'Actions', 'hi' => 'कार्य', 'gu' => 'ક્રિયાઓ'],
 
-    // ---- Muhurat ----
     'upcoming_muhurat' => ['en' => 'Upcoming Muhurat', 'hi' => 'आगामी मुहूर्त', 'gu' => 'આગામી મુહૂર્ત'],
     'auspicious_timings' => ['en' => 'Auspicious timings for important ceremonies and events', 'hi' => 'महत्वपूर्ण समारोहों के लिए शुभ समय', 'gu' => 'મહત્વપૂર્ણ પ્રસંગો માટે શુભ સમય'],
     'all_types' => ['en' => 'All', 'hi' => 'सभी', 'gu' => 'બધા'],
@@ -87,21 +79,17 @@ $translations = [
     'temple_sthapna' => ['en' => 'Temple Sthapna', 'hi' => 'मंदिर स्थापना', 'gu' => 'મંદિર સ્થાપના'],
     'view_full_calendar' => ['en' => 'View Full Calendar', 'hi' => 'पूरा कैलेंडर देखें', 'gu' => 'સંપૂર્ણ કેલેન્ડર જુઓ'],
 
-    // ---- Temples ----
     'sacred_temples' => ['en' => 'Sacred Temples', 'hi' => 'पवित्र मंदिर', 'gu' => 'પવિત્ર મંદિરો'],
     'temple_info' => ['en' => 'Temple Information', 'hi' => 'मंदिर जानकारी', 'gu' => 'મંદિર માહિતી'],
     'view_all_temples' => ['en' => 'View All Temples', 'hi' => 'सभी मंदिर देखें', 'gu' => 'બધા મંદિરો જુઓ'],
 
-    // ---- Festivals ----
     'upcoming_festivals' => ['en' => 'Upcoming Festivals', 'hi' => 'आगामी त्योहार', 'gu' => 'આગામી તહેવારો'],
     'festival_calendar' => ['en' => 'Festival Calendar', 'hi' => 'त्योहार कैलेंडर', 'gu' => 'તહેવાર કેલેન્ડર'],
 
-    // ---- Gallery ----
     'divine_moments' => ['en' => 'Divine Moments', 'hi' => 'दिव्य क्षण', 'gu' => 'દિવ્ય ક્ષણો'],
     'gallery_desc' => ['en' => 'A collection of sacred and spiritual imagery', 'hi' => 'पवित्र और आध्यात्मिक छवियों का संग्रह', 'gu' => 'પવિત્ર અને આધ્યાત્મિક છબીઓનો સંગ્રહ'],
     'gallery_coming_soon' => ['en' => 'Gallery Coming Soon', 'hi' => 'गैलरी जल्द आ रही है', 'gu' => 'ગેલેરી ટૂંક સમયમાં આવશે'],
 
-    // ---- Contact ----
     'contact_us' => ['en' => 'Contact Us', 'hi' => 'हमसे संपर्क करें', 'gu' => 'અમારો સંપર્ક કરો'],
     'send_message' => ['en' => 'Send Us a Message', 'hi' => 'हमें संदेश भेजें', 'gu' => 'અમને સંદેશ મોકલો'],
     'full_name' => ['en' => 'Full Name', 'hi' => 'पूरा नाम', 'gu' => 'પૂરું નામ'],
@@ -114,23 +102,19 @@ $translations = [
     'working_hours' => ['en' => 'Working Hours', 'hi' => 'कार्य समय', 'gu' => 'કામકાજના કલાકો'],
     'msg_sent_success' => ['en' => 'Thank you! Your message has been sent successfully.', 'hi' => 'धन्यवाद! आपका संदेश सफलतापूर्वक भेजा गया।', 'gu' => 'આભાર! તમારો સંદેશ સફળતાપૂર્વક મોકલાયો છે.'],
 
-    // ---- Vastu ----
     'vastu_shastra' => ['en' => 'Vastu Shastra', 'hi' => 'वास्तु शास्त्र', 'gu' => 'વાસ્તુ શાસ્ત્ર'],
     'vastu_desc' => ['en' => 'Ancient Indian science of architecture and spatial geometry', 'hi' => 'वास्तुकला और स्थानिक ज्यामिति का प्राचीन भारतीय विज्ञान', 'gu' => 'સ્થાપત્ય અને અવકાશી ભૂમિતિનું પ્રાચીન ભારતીય વિજ્ઞાન'],
 
-    // ---- Subscribe ----
     'subscribe_premium' => ['en' => 'Subscribe for Premium Access', 'hi' => 'प्रीमियम एक्सेस के लिए सब्सक्राइब करें', 'gu' => 'પ્રીમિયમ એક્સેસ માટે સબ્સ્ક્રાઇબ કરો'],
     'choose_plan' => ['en' => 'Choose Your Plan', 'hi' => 'अपना प्लान चुनें', 'gu' => 'તમારો પ્લાન પસંદ કરો'],
     'monthly' => ['en' => 'Monthly', 'hi' => 'मासिक', 'gu' => 'માસિક'],
     'yearly' => ['en' => 'Yearly', 'hi' => 'वार्षिक', 'gu' => 'વાર્ષિક'],
 
-    // ---- Auth ----
     'welcome_back' => ['en' => 'Welcome Back', 'hi' => 'वापस स्वागत है', 'gu' => 'પાછા આવ્યા, સ્વાગત છે'],
     'create_account' => ['en' => 'Create Account', 'hi' => 'खाता बनाएं', 'gu' => 'એકાઉન્ટ બનાવો'],
     'password' => ['en' => 'Password', 'hi' => 'पासवर्ड', 'gu' => 'પાસવર્ડ'],
     'confirm_password' => ['en' => 'Confirm Password', 'hi' => 'पासवर्ड की पुष्टि', 'gu' => 'પાસવર્ડ ની પુષ્ટિ'],
 
-    // ---- Footer ----
     'quick_links' => ['en' => 'Quick Links', 'hi' => 'त्वरित लिंक', 'gu' => 'ઝડપી લિંક્સ'],
     'follow_us' => ['en' => 'Follow Us', 'hi' => 'हमें फॉलो करें', 'gu' => 'અમને ફોલો કરો'],
     'all_rights' => ['en' => 'All rights reserved.', 'hi' => 'सर्वाधिकार सुरक्षित।', 'gu' => 'સર્વ હક્ક સુરક્ષિત.'],
@@ -141,11 +125,9 @@ $translations = [
     'crafted_with_love' => ['en' => 'Crafted with', 'hi' => 'बनाया गया', 'gu' => 'બનાવેલ'],
     'for_divine' => ['en' => 'for divine guidance.', 'hi' => 'दिव्य मार्गदर्शन के लिए।', 'gu' => 'દિવ્ય માર્ગદર્શન માટે.'],
 
-    // ---- Hero Section ----
     'welcome_user' => ['en' => 'Welcome,', 'hi' => 'स्वागत है,', 'gu' => 'સ્વાગત છે,'],
     'panchang_for' => ['en' => 'Panchang details for', 'hi' => 'पंचांग विवरण', 'gu' => 'પંચાંગ વિગતો'],
 
-    // ---- Subscribe Section ----
     'thank_you_subscribing' => ['en' => 'Thank You For Subscribing!', 'hi' => 'सब्सक्राइब करने के लिए धन्यवाद!', 'gu' => 'સબ્સ્ક્રાઇબ કરવા બદલ આભાર!'],
     'premium_access_desc' => ['en' => 'You now have unlimited premium access to detailed Panchang data, PDF downloads, the full Muhurat calendar, and exclusive spiritual content.', 'hi' => 'अब आपके पास विस्तृत पंचांग डेटा, PDF डाउनलोड, पूर्ण मुहूर्त कैलेंडर और विशेष आध्यात्मिक सामग्री तक असीमित प्रीमियम पहुंच है।', 'gu' => 'હવે તમારી પાસે વિસ્તૃત પંચાંગ ડેટા, PDF ડાઉનલોડ, સંપૂર્ણ મુહૂર્ત કેલેન્ડર અને વિશેષ આધ્યાત્મિક સામગ્રી સુધી અમર્યાદિત પ્રીમિયમ ઍક્સેસ છે.'],
     'subscribe_premium_desc' => ['en' => 'Get unlimited access to detailed Panchang data, PDF downloads, Muhurat calendar, and exclusive spiritual content with our premium subscription.', 'hi' => 'हमारी प्रीमियम सदस्यता के साथ विस्तृत पंचांग डेटा, PDF डाउनलोड, मुहूर्त कैलेंडर और विशेष आध्यात्मिक सामग्री तक असीमित पहुंच प्राप्त करें।', 'gu' => 'અમારી પ્રીમિયમ સબ્સ્ક્રિપ્શન સાથે વિસ્તૃત પંચાંગ ડેટા, PDF ડાઉનલોડ, મુહૂર્ત કેલેન્ડર અને વિશેષ આધ્યાત્મિક સામગ્રી સુધી અમર્યાદિત ઍક્સેસ મેળવો.'],
@@ -162,32 +144,37 @@ $translations = [
     'premium_content' => ['en' => 'Premium Content Locked', 'hi' => 'प्रीमियम सामग्री लॉक', 'gu' => 'પ્રીમિયમ સામગ્રી લૉક'],
     'premium_content_desc' => ['en' => 'Full metadata including PDF downloads and additional astrological calculations is only visible after subscribing.', 'hi' => 'PDF डाउनलोड और अतिरिक्त ज्योतिषीय गणनाओं सहित पूर्ण मेटाडेटा केवल सब्सक्राइब करने के बाद दिखाई देता है।', 'gu' => 'PDF ડાઉનલોડ અને વધારાની જ્યોતિષીય ગણતરીઓ સહિત સંપૂર્ણ મેટાડેટા ફક્ત સબ્સ્ક્રાઇબ કર્યા પછી જ દેખાય છે.'],
 
-    // ---- Panchang Detail Fields ----
     'ayan' => ['en' => 'Ayan', 'hi' => 'अयन', 'gu' => 'અયન'],
     'gujarati_month' => ['en' => 'Gujarati Month', 'hi' => 'गुजराती महीना', 'gu' => 'ગુજરાતી મહિનો'],
     'sun_longitude' => ['en' => 'Sun Longitude', 'hi' => 'सूर्य रेखांश', 'gu' => 'સૂર્ય રેખાંશ'],
     'moon_longitude' => ['en' => 'Moon Longitude', 'hi' => 'चंद्र रेखांश', 'gu' => 'ચંદ્ર રેખાંશ'],
     'graha_position' => ['en' => 'Graha Position', 'hi' => 'ग्रह स्थिति', 'gu' => 'ગ્રહ સ્થિતિ'],
     'vichudo_panchak' => ['en' => 'Vichudo / Panchak', 'hi' => 'विछुडो / पंचक', 'gu' => 'વિછુડો / પંચક'],
+    'vichudo' => ['en' => 'Vichudo', 'hi' => 'विछुडो', 'gu' => 'વિછુડો'],
+    'panchak' => ['en' => 'Panchak', 'hi' => 'पंचक', 'gu' => 'પંચક'],
     'location' => ['en' => 'Location', 'hi' => 'स्थान', 'gu' => 'સ્થાન'],
     'start' => ['en' => 'Start', 'hi' => 'शुरू', 'gu' => 'શરૂ'],
     'end' => ['en' => 'End', 'hi' => 'समाप्त', 'gu' => 'સમાપ્ત'],
+    'recorded_at' => ['en' => 'Recorded At', 'hi' => 'रिकॉर्ड किया गया', 'gu' => 'રેકોર્ડ કરેલ'],
+    'solar_lunar_details' => ['en' => 'Solar & Lunar Details', 'hi' => 'सौर और चंद्र विवरण', 'gu' => 'સૂર્ય અને ચંદ્રની વિગતો'],
+    'panchang_elements' => ['en' => 'Panchang Elements', 'hi' => 'पंचांग के तत्व', 'gu' => 'પંચાંગના તત્વો'],
+    'additional_info' => ['en' => 'Additional Information', 'hi' => 'अतिरिक्त जानकारी', 'gu' => 'વધારાની માહિતી'],
+    'download_full_report' => ['en' => 'Download Full Report', 'hi' => 'पूरी रिपोर्ट डाउनलोड करें', 'gu' => 'સંપૂર્ણ રિપોર્ટ ડાઉનલોડ કરો'],
+    'unlock_yoga_karana' => ['en' => 'Unlock Yoga & Karana', 'hi' => 'योग और करण अनलॉक करें', 'gu' => 'યોગ અને કરણ અનલૉક કરો'],
+    'unlock_kaal_timings' => ['en' => 'Unlock Kaal Timings', 'hi' => 'काल समय अनलॉक करें', 'gu' => 'કાળ સમય અનલૉક કરો'],
     'pdf_not_available' => ['en' => 'PDF not available for this date.', 'hi' => 'इस तारीख के लिए PDF उपलब्ध नहीं है।', 'gu' => 'આ તારીખ માટે PDF ઉપલબ્ધ નથી.'],
 
-    // ---- Monthly Calendar ----
     'monthly_calendar' => ['en' => 'Monthly Panchang Calendar', 'hi' => 'मासिक पंचांग कैलेंडर', 'gu' => 'માસિક પંચાંગ કેલેન્ડર'],
     'select_dates_desc' => ['en' => 'Click on dates to view Panchang details — select multiple dates to compare', 'hi' => 'पंचांग विवरण देखने के लिए तारीखों पर क्लिक करें — तुलना करने के लिए कई तारीखें चुनें', 'gu' => 'પંચાંગ વિગતો જોવા તારીખો પર ક્લિક કરો — સરખામણી માટે ઘણી તારીખો પસંદ કરો'],
     'select_date_prompt' => ['en' => 'Select one or more dates above to view and compare detailed Panchang.', 'hi' => 'विस्तृत पंचांग देखने और तुलना करने के लिए ऊपर एक या अधिक तारीखें चुनें।', 'gu' => 'વિસ્તૃત પંચાંગ જોવા અને સરખામણી કરવા ઉપર એક અથવા વધુ તારીખો પસંદ કરો.'],
-    'dates_selected' => ['en' => 'Date(s) Selected', 'hi' => 'तारीख(ें) चयनित', 'gu' => 'તારીખ(ો) પસંદ'],
+    'dates_selected' => ['en' => 'Date(s) Selected', 'hi' => 'तारीख(एं) चयनित', 'gu' => 'તારીખો પસંદ'],
 
-    // ---- Misc ----
     'no_upcoming_muhurat' => ['en' => 'No upcoming muhurat data available.', 'hi' => 'कोई आगामी मुहूर्त डेटा उपलब्ध नहीं।', 'gu' => 'કોઈ આગામી મુહૂર્ત ડેટા ઉપલબ્ધ નથી.'],
     'festival_coming_soon' => ['en' => 'Festival data coming soon.', 'hi' => 'त्योहार डेटा जल्द आ रहा है।', 'gu' => 'તહેવાર ડેટા ટૂંક સમયમાં આવશે.'],
     'divine_moments_desc' => ['en' => 'Moments of divine beauty and spiritual grace', 'hi' => 'दिव्य सौंदर्य और आध्यात्मिक अनुग्रह के क्षण', 'gu' => 'દિવ્ય સૌંદર્ય અને આધ્યાત્મિક કૃપાના ક્ષણો'],
     'view_full_gallery' => ['en' => 'View Full Gallery', 'hi' => 'पूरी गैलरी देखें', 'gu' => 'સંપૂર્ણ ગેલેરી જુઓ'],
     'hello' => ['en' => 'Hello,', 'hi' => 'नमस्ते,', 'gu' => 'નમસ્તે,'],
 
-    // ---- Vastu Extended ----
     'vastu_ancient_science' => ['en' => 'The Ancient Science of Architecture', 'hi' => 'वास्तुकला का प्राचीन विज्ञान', 'gu' => 'વાસ્તુશિલ્પનું પ્રાચીન વિજ્ઞાન'],
     'vastu_intro_text' => [
         'en' => 'Vastu Shastra is an ancient Indian science of architecture and buildings, which helps in creating a harmonious environment by applying certain geometric patterns and directional alignments.',
@@ -205,18 +192,16 @@ $translations = [
     'west_desc' => ['en' => 'Governs gains and social connections. Suitable for dining room.', 'hi' => 'लाभ और सामाजिक संबंधों को नियंत्रित करता है। भोजन कक्ष के लिए उपयुक्त।', 'gu' => 'લાભ અને સામાજિક કનેક્શનનું સંચાલન કરે છે. ડાઇનિંગ રૂમ માટે યોગ્ય.'],
     'vastu_tips' => ['en' => 'Essential Vastu Tips', 'hi' => 'आवश्यक वास्तु टिप्स', 'gu' => 'મહત્વપૂર્ણ વાસ્તુ ટિપ્સ'],
     'main_entrance' => ['en' => 'Main Entrance', 'hi' => 'मुख्य प्रवेश द्वार', 'gu' => 'મુખ્ય પ્રવેશદ્વાર'],
-    'bedroom' => ['en' => 'Bedroom', 'hi' => 'बेडરૂમ', 'gu' => 'બેડરૂમ'],
+    'bedroom' => ['en' => 'Bedroom', 'hi' => 'बेडरूम', 'gu' => 'બેડરૂમ'],
     'kitchen' => ['en' => 'Kitchen', 'hi' => 'रसोई', 'gu' => 'રસોડું'],
     'pooja_room' => ['en' => 'Pooja Room', 'hi' => 'पूजा कक्ष', 'gu' => 'પૂજા ખંડ'],
 
-    // ---- Gating Labels ----
     'unlock_more' => ['en' => 'Unlock More', 'hi' => 'अधिक अनलॉक करें', 'gu' => 'વધુ અનલૉક કરો'],
     'unlock_all_muhurats' => ['en' => 'Unlock All Upcoming Muhurats', 'hi' => 'सभी आगामी मुहूर्त अनलॉक करें', 'gu' => 'બધા આગામી મુહૂર્ત અનલૉક કરો'],
     'unlock_all_festivals' => ['en' => 'Unlock All Festivals', 'hi' => 'सभी त्योहार अनलॉक करें', 'gu' => 'બધા તહેવારો અનલૉક કરો'],
     'login_to_unlock' => ['en' => 'Login to Unlock', 'hi' => 'अनलॉक करने के लिए लॉगिन करें', 'gu' => 'અનલૉક કરવા માટે લોગિન કરો'],
     'subscribe_to_unlock' => ['en' => 'Subscribe to Unlock', 'hi' => 'अनलॉक करने के लिए सब्सक्राइब करें', 'gu' => 'અનલૉક કરવા માટે સબ્સ્ક્રાઇબ કરો'],
 
-    // ---- Time & Dates ----
     'monday' => ['en' => 'Monday', 'hi' => 'सोमवार', 'gu' => 'સોમવાર'],
     'tuesday' => ['en' => 'Tuesday', 'hi' => 'मंगलवार', 'gu' => 'મંગળવાર'],
     'wednesday' => ['en' => 'Wednesday', 'hi' => 'बुधवार', 'gu' => 'બુધવાર'],
@@ -238,30 +223,80 @@ $translations = [
     'november' => ['en' => 'November', 'hi' => 'नवंबर', 'gu' => 'નવેમ્બર'],
     'december' => ['en' => 'December', 'hi' => 'दिसंबर', 'gu' => 'ડિસેમ્બર'],
 
-    // ---- Common Tithis ----
-    'pratipada' => ['en' => 'Pratipada', 'hi' => 'प्रतिपदा', 'gu' => 'પ્રતિપદા'],
-    'dwitiya' => ['en' => 'Dwitiya', 'hi' => 'द्वितीया', 'gu' => 'દ્વિતીયા'],
-    'tritiya' => ['en' => 'Tritiya', 'hi' => 'तृतीया', 'gu' => 'તૃતીયા'],
-    'chaturthi' => ['en' => 'Chaturthi', 'hi' => 'ચતુર્થી', 'gu' => 'ચર્તુથી'],
-    'panchami' => ['en' => 'Panchami', 'hi' => 'पंचमी', 'gu' => 'પંચમી'],
-    'shasthi' => ['en' => 'Shasthi', 'hi' => 'षष्ठी', 'gu' => 'ષષ્ઠી'],
-    'saptami' => ['en' => 'Saptami', 'hi' => 'सप्तमी', 'gu' => 'સપ્તમી'],
-    'asthami' => ['en' => 'Asthami', 'hi' => 'अष्टमी', 'gu' => 'અષ્ટમી'],
-    'navami' => ['en' => 'Navami', 'hi' => 'नवमी', 'gu' => 'નવમી'],
-    'dashami' => ['en' => 'Dashami', 'hi' => 'દશમી', 'gu' => 'દશમી'],
-    'ekadashi' => ['en' => 'Ekadashi', 'hi' => 'એકાદશી', 'gu' => 'એકાદશી'],
-    'dwadashi' => ['en' => 'Dwadashi', 'hi' => 'દ્વાદશી', 'gu' => 'દ્વાદશી'],
-    'trayodashi' => ['en' => 'Trayodashi', 'hi' => 'ત્રયોદશી', 'gu' => 'ત્રયોદશી'],
-    'chaturdashi' => ['en' => 'Chaturdashi', 'hi' => 'ચતુર્દશી', 'gu' => 'ચતુર્દશી'],
-    'purnima' => ['en' => 'Purnima', 'hi' => 'पूर्णिमा', 'gu' => 'પૂર્ણિમા'],
-    'amavasya' => ['en' => 'Amavasya', 'hi' => 'અમાવસ્યા', 'gu' => 'અમાસ'],
+    'amavasya' => ['en' => 'Amavasya', 'hi' => 'अमावस्या', 'gu' => 'અમાસ'],
 
-    // ---- Common Nakshatras ----
-    'ashwini' => ['en' => 'Ashwini', 'hi' => 'अश्विनी', 'gu' => 'અશ્વિની'],
-    'bharani' => ['en' => 'Bharani', 'hi' => 'भरणी', 'gu' => 'ભરણી'],
-    'kritika' => ['en' => 'Kritika', 'hi' => 'कृतिका', 'gu' => 'કૃતિકા'],
-    'rohini' => ['en' => 'Rohini', 'hi' => 'रोहिणी', 'gu' => 'રોહિણી'],
+    '1' => ['en' => 'Pratipada', 'hi' => 'प्रतिपदा', 'gu' => 'પ્રતિપદા'],
+    '2' => ['en' => 'Dwitiya', 'hi' => 'द्वितीया', 'gu' => 'દ્વિતીયા'],
+    '3' => ['en' => 'Tritiya', 'hi' => 'तृतीया', 'gu' => 'તૃતીયા'],
+    '4' => ['en' => 'Chaturthi', 'hi' => 'चतुर्थी', 'gu' => 'ચતુર્થી'],
+    '5' => ['en' => 'Panchami', 'hi' => 'पंचमी', 'gu' => 'પંચમી'],
+    '6' => ['en' => 'Shasthi', 'hi' => 'षष्ठी', 'gu' => 'ષષ્ઠી'],
+    '7' => ['en' => 'Saptami', 'hi' => 'सप्तमी', 'gu' => 'સપ્તમી'],
+    '8' => ['en' => 'Asthami', 'hi' => 'अष्टमी', 'gu' => 'અષ્ટમી'],
+    '9' => ['en' => 'Navami', 'hi' => 'नवमी', 'gu' => 'નવમી'],
+    '10' => ['en' => 'Dashami', 'hi' => 'दशमी', 'gu' => 'દશમી'],
+    '11' => ['en' => 'Ekadashi', 'hi' => 'एकादशी', 'gu' => 'એકાદશી'],
+    '12' => ['en' => 'Dwadashi', 'hi' => 'द्वादशी', 'gu' => 'દ્વાદશી'],
+    '13' => ['en' => 'Trayodashi', 'hi' => 'त्रयोदशी', 'gu' => 'ત્રયોદશી'],
+    '14' => ['en' => 'Chaturdashi', 'hi' => 'चतुर्दशी', 'gu' => 'ચતુર્દશી'],
+    '15' => ['en' => 'Purnima', 'hi' => 'पूर्णिमा', 'gu' => 'પૂર્ણિમા'],
+    '16' => ['en' => 'Pratipada', 'hi' => 'प्रतिपदा', 'gu' => 'પ્રતિપદા'],
+    '17' => ['en' => 'Dwitiya', 'hi' => 'द्वितीया', 'gu' => 'દ્વિતીયા'],
+    '18' => ['en' => 'Tritiya', 'hi' => 'तृतीया', 'gu' => 'તૃતીયા'],
+    '19' => ['en' => 'Chaturthi', 'hi' => 'चतुर्थी', 'gu' => 'ચતુર્થી'],
+    '20' => ['en' => 'Panchami', 'hi' => 'पंचमी', 'gu' => 'પંચમી'],
+    '21' => ['en' => 'Shasthi', 'hi' => 'षष्ठी', 'gu' => 'ષષ્ઠી'],
+    '22' => ['en' => 'Saptami', 'hi' => 'सप्तमी', 'gu' => 'સપ્તમી'],
+    '23' => ['en' => 'Asthami', 'hi' => 'अष्टमी', 'gu' => 'અષ્ટમી'],
+    '24' => ['en' => 'Navami', 'hi' => 'नवमी', 'gu' => 'નવમી'],
+    '25' => ['en' => 'Dashami', 'hi' => 'दशमी', 'gu' => 'દશમી'],
+    '26' => ['en' => 'Ekadashi', 'hi' => 'एकादशी', 'gu' => 'એકાદશી'],
+    '27' => ['en' => 'Dwadashi', 'hi' => 'द्वादशी', 'gu' => 'દ્વાદશી'],
+    '28' => ['en' => 'Trayodashi', 'hi' => 'त्रयोदशी', 'gu' => 'ત્રયોદશી'],
+    '29' => ['en' => 'Chaturdashi', 'hi' => 'चतुर्दशी', 'gu' => 'ચતુર્દશી'],
+    '30' => ['en' => 'Amavasya', 'hi' => 'अमावस्या', 'gu' => 'અમાસ'],
+
     'mriga' => ['en' => 'Mriga', 'hi' => 'मृगा', 'gu' => 'મૃગસીર્ષ'],
+    'અનુરાધા' => ['en' => 'Anuradha', 'hi' => 'अनुराधा', 'gu' => 'અનુરાધા'],
+    'અશ્લેષા' => ['en' => 'Ashlesha', 'hi' => 'अश्लेषा', 'gu' => 'અશ્લેષા'],
+    'અશ્વિની' => ['en' => 'Ashwini', 'hi' => 'अश्विनी', 'gu' => 'અશ્વિની'],
+    'આર્દ્રા' => ['en' => 'Ardra', 'hi' => 'आर्द्रा', 'gu' => 'આર્દ્રા'],
+    'ઉત્તર ફાલ્ગુની' => ['en' => 'Uttara Phalguni', 'hi' => 'उत्तरा फाल्गुनी', 'gu' => 'ઉત્તર ફાલ્ગુની'],
+    'ઉત્તર ભાદ્રપદ' => ['en' => 'Uttara Bhadrapada', 'hi' => 'उत्तरा भाद्रपद', 'gu' => 'ઉત્તર ભાદ્રપદ'],
+    'ઉત્તર ષાઢા' => ['en' => 'Uttara Ashadha', 'hi' => 'उत्तराषाढ़ा', 'gu' => 'ઉત્તર ષાઢા'],
+    'કૃતિકા' => ['en' => 'Kritika', 'hi' => 'कृतिका', 'gu' => 'કૃતિકા'],
+    'ચિત્રા' => ['en' => 'Chitra', 'hi' => 'चित्रा', 'gu' => 'ચિત્રા'],
+    'જ્યેષ્ઠા' => ['en' => 'Jyeshtha', 'hi' => 'ज्येष्ठा', 'gu' => 'જ્યેષ્ઠા'],
+    'ધનિષ્ઠા' => ['en' => 'Dhanishta', 'hi' => 'धनिष्ठा', 'gu' => 'ધનિષ્ઠા'],
+    'પુનર્વસુ' => ['en' => 'Punarvasu', 'hi' => 'पुनर्वसु', 'gu' => 'પુનર્વસુ'],
+    'પુષ્ય' => ['en' => 'Pushya', 'hi' => 'पुष्य', 'gu' => 'પુષ્ય'],
+    'પૂર્વ ફાલ્ગુની' => ['en' => 'Purva Phalguni', 'hi' => 'पूर्वा फाल्गुनी', 'gu' => 'પૂર્વ ફાલ્ગુની'],
+    'પૂર્વ ભાદ્રપદ' => ['en' => 'Purva Bhadrapada', 'hi' => 'पूर्वा भाद्रपद', 'gu' => 'પૂર્વ ભાદ્રપદ'],
+    'પૂર્વ ષાઢા' => ['en' => 'Purva Ashadha', 'hi' => 'पूर्वाषाढ़ा', 'gu' => 'પૂર્વ ષાઢા'],
+    'ભરણિ' => ['en' => 'Bharani', 'hi' => 'भरणी', 'gu' => 'ભરણી'],
+    'મઘા' => ['en' => 'Magha', 'hi' => 'मघा', 'gu' => 'મઘા'],
+    'મૂળ' => ['en' => 'Mula', 'hi' => 'मूल', 'gu' => 'મૂળ'],
+    'મૃગશિર્ષ' => ['en' => 'Mrigashirsha', 'hi' => 'मृगशिरा', 'gu' => 'મૃગશિર્ષ'],
+    'રેવતી' => ['en' => 'Revati', 'hi' => 'रेवती', 'gu' => 'રેવતી'],
+    'રોહિણી' => ['en' => 'Rohini', 'hi' => 'रोहिणी', 'gu' => 'રોહિણી'],
+    'વિશાખા' => ['en' => 'Vishakha', 'hi' => 'विशाखा', 'gu' => 'વિશાખા'],
+    'શતભિષા' => ['en' => 'Shatabhisha', 'hi' => 'शतभिषा', 'gu' => 'શતભિષા'],
+    'શ્રવણ' => ['en' => 'Shravana', 'hi' => 'श्रवण', 'gu' => 'શ્રવણ'],
+    'સ્વાતિ' => ['en' => 'Swati', 'hi' => 'स्वाति', 'gu' => 'સ્વાતિ'],
+    'હસ્ત' => ['en' => 'Hasta', 'hi' => 'हस्त', 'gu' => 'હસ્ત'],
+
+    'mesha' => ['en' => 'Aries', 'hi' => 'मेष', 'gu' => 'મેષ'],
+    'vrishabha' => ['en' => 'Taurus', 'hi' => 'वृषभ', 'gu' => 'વૃષભ'],
+    'mithuna' => ['en' => 'Gemini', 'hi' => 'मिथुन', 'gu' => 'મિથુન'],
+    'karka' => ['en' => 'Cancer', 'hi' => 'कर्क', 'gu' => 'કર્ક'],
+    'simha' => ['en' => 'Leo', 'hi' => 'सिंह', 'gu' => 'સિંહ'],
+    'kanya' => ['en' => 'Virgo', 'hi' => 'कन्या', 'gu' => 'કન્યા'],
+    'tula' => ['en' => 'Libra', 'hi' => 'तुला', 'gu' => 'તુલા'],
+    'vrishchika' => ['en' => 'Scorpio', 'hi' => 'वृश्चिक', 'gu' => 'વૃશ્ચિક'],
+    'dhanu' => ['en' => 'Sagittarius', 'hi' => 'धनु', 'gu' => 'ધનુ'],
+    'makara' => ['en' => 'Capricorn', 'hi' => 'मकर', 'gu' => 'મકર'],
+    'kumbha' => ['en' => 'Aquarius', 'hi' => 'कुंभ', 'gu' => 'કુંભ'],
+    'meena' => ['en' => 'Pisces', 'hi' => 'मीन', 'gu' => 'મીન'],
 
     'no_festival_available' => ['en' => 'No festival data available for', 'hi' => 'के लिए कोई त्योहार डेटा उपलब्ध नहीं है', 'gu' => 'માટે કોઈ તહેવાર ડેટા ઉપલબ્ધ નથી'],
     'yes' => ['en' => 'YES', 'hi' => 'हा', 'gu' => 'હા'],
@@ -279,8 +314,6 @@ $translations = [
     'time' => ['en' => 'Time', 'hi' => 'समय', 'gu' => 'સમય'],
     'details' => ['en' => 'Details', 'hi' => 'विवरण', 'gu' => 'વિગતો'],
     'type' => ['en' => 'Type', 'hi' => 'प्रकार', 'gu' => 'પ્રકાર'],
-
-    // ---- Common Festivals ----
     'maha shivaratri' => ['en' => 'Maha Shivaratri', 'hi' => 'महा शिवरात्रि', 'gu' => 'મહા શિવરાત્રી'],
     'holi' => ['en' => 'Holi', 'hi' => 'होली', 'gu' => 'હોળી'],
     'makar sankranti' => ['en' => 'Makar Sankranti', 'hi' => 'मकर संक्रांति', 'gu' => 'મકર સંક્રાંતિ'],
@@ -296,13 +329,11 @@ $translations = [
     'bhai dooj' => ['en' => 'Bhai Dooj', 'hi' => 'भाई दूज', 'gu' => 'ભાઇબીજ'],
     'labh panchami' => ['en' => 'Labh Panchami', 'hi' => 'लाभ पंचमी', 'gu' => 'લાભપંચમ'],
 
-    // ---- Gallery Titles ----
     'vedic astrology chart' => ['en' => 'Vedic Astrology Chart', 'hi' => 'वैदिक ज्योतिष चार्ट', 'gu' => 'વૈદિક જ્યોતિષ ચાર્ટ'],
     'zodiac mandala' => ['en' => 'Zodiac Mandala', 'hi' => 'राशि चक्र मंडला', 'gu' => 'રાશિ ચક્ર મંડલા'],
     'ancient temple astronomy' => ['en' => 'Ancient Temple Astronomy', 'hi' => 'प्राचीन मंदिर खगोल विज्ञान', 'gu' => 'પ્રાચીન મંદિર ખગોળ વિજ્ઞાન'],
     'navagraha cosmic view' => ['en' => 'Navagraha Cosmic View', 'hi' => 'नवग्रह ब्रह्मांडीय दृश्य', 'gu' => 'નવગ્રહ કોસ્મિક વ્યુ'],
 
-    // ---- Vastu Tips ----
     'vastu_tip_entrance_1' => ['en' => 'Main door should face North, East, or North-East', 'hi' => 'मुख्य द्वार उत्तर, पूर्व या उत्तर-पूर्व की ओर होना चाहिए', 'gu' => 'મુખ્ય દરવાજો ઉત્તર, પૂર્વ અથવા ઉત્તર-વૈદિક દિશામાં હોવો જોઈએ'],
     'vastu_tip_entrance_2' => ['en' => 'Avoid placing dustbin or shoe rack near the entrance', 'hi' => 'प्रवेश द्वार के पास कूड़ेदान या जूतों का रैक रखने से बचें', 'gu' => 'પ્રવેશદ્વાર પાસે કચરાપેટી અથવા જૂતાનું રેક રાખવાનું ટાળો'],
     'vastu_tip_entrance_3' => ['en' => 'Door should open inwards in a clockwise direction', 'hi' => 'दरवाजा घड़ी की दिशा में अंदर की ओर खुलना चाहिए', 'gu' => 'દરવાજો અંદરની તરફ જમણી (ક્લોકવાઈઝ) દિશામાં ખુલવો જોઈએ'],
@@ -320,7 +351,6 @@ $translations = [
     'vastu_tip_pooja_3' => ['en' => 'Keep idols/photos at least a few inches from the wall', 'hi' => 'मूर्तियों/फोटो को दीवार से कम से कम कुछ इंच दूर रखें', 'gu' => 'મૂર્તિઓ અથવા ફોટાને દીવાલથી થોડા ઇંચ દૂર રાખો'],
     'vastu_tip_pooja_4' => ['en' => 'Avoid placing pooja room under staircase', 'hi' => 'सीढ़ियों के नीचे पूजा घर बनाने से बचें', 'gu' => 'પગથિયાંની નીચે પૂજા રૂમ બનાવવાનું ટાળો'],
 
-    // ---- PDF & Navigation Labels ----
     'divine_guide' => ['en' => 'Your Divine Guide to Auspicious Timings', 'hi' => 'शुभ समय के लिए आपका दिव्य मार्गदर्शक', 'gu' => 'શુભ સમય માટે તમારા દિવ્ય માર્ગદર્શિકા'],
     'daily_overview' => ['en' => 'Daily Overview', 'hi' => 'दैनिक अवलोकन', 'gu' => 'દૈનિક વિહંગાવલોકન'],
     'panchang_elements' => ['en' => 'Panchang Elements', 'hi' => 'पंचांग तत्व', 'gu' => 'પંચાંગ તત્વો'],
@@ -333,26 +363,214 @@ $translations = [
     'unlock_full_muhurats' => ['en' => 'Unlock all Muhurats', 'hi' => 'सभी मुहूर्त अनलॉक करें', 'gu' => 'બધા મુહૂર્તો અનલોક કરો'],
     'unlock_all_festivals' => ['en' => 'Unlock all Festivals', 'hi' => 'सभी त्योहार अनलॉक करें', 'gu' => 'બધા તહેવારો અનલોક કરો'],
     'login_to_unlock' => ['en' => 'Login to Unlock', 'hi' => 'अनलॉक करने के लिए लॉगिन करें', 'gu' => 'અનલોક કરવા માટે લોગિન કરો'],
+
+    'select_location' => ['en' => 'Select Location', 'hi' => 'स्थान चुनें', 'gu' => 'સ્થાન પસંદ કરો'],
+    'select_location_desc' => ['en' => 'Please select a location from the navbar to view details.', 'hi' => 'विवरण देखने के लिए कृपया नेवबार से स्थान चुनें।', 'gu' => 'વિગતો જોવા માટે કૃપા કરીને નેવબારમાંથી સ્થાન પસંદ કરો.'],
+    'login_to_view_muhurats' => ['en' => 'Login to View Muhurats', 'hi' => 'मुहूर्त देखने के लिए लॉगिन करें', 'gu' => 'મુહૂર્ત જોવા માટે લોગિન કરો'],
+    'login_to_view_festivals' => ['en' => 'Login to View Festivals', 'hi' => 'त्योहार देखने के लिए लॉगिन करें', 'gu' => 'તહેવારો જોવા માટે લોગિન કરો'],
+    'auspicious_timings_desc' => ['en' => 'View auspicious timings for important ceremonies and events.', 'hi' => 'महत्वपूर्ण समारोहों और कार्यक्रमों के लिए शुभ समय देखें।', 'gu' => 'મહત્વપૂર્ણ પ્રસંગો અને કાર્યક્રમો માટે શુભ સમય જુઓ.'],
+    'login_now' => ['en' => 'Login Now', 'hi' => 'अभी लॉगिन करें', 'gu' => 'હમણાં લોગિન કરો'],
+
+    'login_to_account' => ['en' => 'Login to your Astro Panchang account', 'hi' => 'अपने ज्योतिष पंचांग खाते में लॉगिन करें', 'gu' => 'તમારા જ્યોતિષ પંચાંગ એકાઉન્ટમાં લોગિન કરો'],
+    'register_subtitle' => ['en' => 'Join Astro Panchang for premium features', 'hi' => 'प्रीमियम सुविधाओं के लिए ज्योतिष पंचांग से जुड़ें', 'gu' => 'પ્રીમિયમ સુવિધાઓ માટે જ્યોતિષ પંચાંગ સાથે જોડાઓ'],
+    'email_address' => ['en' => 'Email Address', 'hi' => 'ईमेल पता', 'gu' => 'ઈમેલ સરનામું'],
+    'enter_email' => ['en' => 'Enter your email', 'hi' => 'अपना ईमेल दर्ज करें', 'gu' => 'તમારો ઈમેલ દાખલ કરો'],
+    'enter_password' => ['en' => 'Enter your password', 'hi' => 'अपना पासवर्ड दर्ज करें', 'gu' => 'તમારો પાસવર્ડ દાખલ કરો'],
+    'enter_name' => ['en' => 'Enter your full name', 'hi' => 'अपना पूरा नाम दर्ज करें', 'gu' => 'તમારું પૂરું નામ દાખલ કરો'],
+    'dont_have_account' => ['en' => "Don't have an account?", 'hi' => 'खाता नहीं है?', 'gu' => 'એકાઉન્ટ નથી?'],
+    'register_here' => ['en' => 'Register here', 'hi' => 'यहाँ रजिस्टर करें', 'gu' => 'અહીં રજિસ્ટર કરો'],
+    'back_to_home' => ['en' => 'Back to Home', 'hi' => 'होम पर वापस जाएं', 'gu' => 'હોમ પર પાછા જાઓ'],
+    'already_have_account' => ['en' => 'Already have an account?', 'hi' => 'पहले से खाता है?', 'gu' => 'પહેલેથી એકાઉન્ટ છે?'],
+    'login_here' => ['en' => 'Login here', 'hi' => 'यहाँ लॉगिन करें', 'gu' => 'અહીં લોગિન કરો'],
+    'min_6_chars' => ['en' => 'Minimum 6 characters', 'hi' => 'न्यूनतम 6 अक्षर', 'gu' => 'ઓછામાં ઓછા 6 અક્ષરો'],
+    'reenter_password' => ['en' => 'Re-enter your password', 'hi' => 'पासवर्ड फिर से दर्ज करें', 'gu' => 'પાસવર્ડ ફરીથી દાખલ કરો'],
+
+    'hello_admin' => ['en' => 'Hello Admin', 'hi' => 'नमस्ते एडमिन', 'gu' => 'નમસ્તે એડમિન'],
+    'dashboard' => ['en' => 'Dashboard', 'hi' => 'डैशबोर्ड', 'gu' => 'ડેશબોર્ડ'],
+    'upload_excel_label' => ['en' => 'Upload Excel', 'hi' => 'एक्सेल अपलोड', 'gu' => 'એક્સેલ અપલોડ'],
+    'messages_label' => ['en' => 'Messages', 'hi' => 'संदेश', 'gu' => 'સંદેશા'],
+    'users_label' => ['en' => 'Users', 'hi' => 'उपयोगकर्ता', 'gu' => 'વપરાશકર્તાઓ'],
+    'books_label' => ['en' => 'Books', 'hi' => 'पुस्तकें', 'gu' => 'પુસ્તકો'],
+    'view_site' => ['en' => 'View Site', 'hi' => 'साइट देखें', 'gu' => 'સાઇટ જુઓ'],
+
+    'about_intro' => ['en' => 'Astro Panchang is your trusted companion for authentic Hindu calendar information, daily Panchang data, auspicious Muhurat timings, and festival calendars. Our mission is to preserve and share the ancient wisdom of Vedic astrology with the modern world.', 'hi' => 'एस्ट्रो पंचांग प्रामाणिक हिंदू कैलेंडर जानकारी, दैनिक पंचांग डेटा, शुभ मुहूर्त समय और त्योहार कैलेंडरों के लिए आपका विश्वसनीय साथी है। हमारा मिशन वैदिक ज्योतिष के प्राचीन ज्ञान को आधुनिक दुनिया के साथ संरक्षित और साझा करना है।', 'gu' => 'એસ્ટ્રો પંચાંગ અધિકૃત હિન્દુ કેલેન્ડર માહિતી, દૈનિક પંચાંગ ડેટા, શુભ મુહૂર્ત સમય અને તહેવાર કેલેન્ડર માટે તમારો વિશ્વસનીય સાથી છે. અમારું મિશન વૈદિક જ્યોતિષના પ્રાચીન જ્ઞાનને આધુનિક વિશ્વ સાથે સાચવવા અને શેર કરવાનું છે.'],
+    'daily_panchang_title' => ['en' => 'Daily Panchang', 'hi' => 'दैनिक पंचांग', 'gu' => 'દૈનિક પંચાંગ'],
+    'daily_panchang_desc' => ['en' => 'Accurate daily Panchang with Tithi, Nakshatra, Yoga, Karana and more.', 'hi' => 'तिथि, नक्षत्र, योग, करण और बहुत कुछ के साथ सटीक दैनिक पंचांग।', 'gu' => 'તિથિ, નક્ષત્ર, યોગ, કરણ અને વધુ સાથે સચોટ દૈનિક પંચાંગ.'],
+    'muhurat_timings_title' => ['en' => 'Muhurat Timings', 'hi' => 'मुहूर्त समय', 'gu' => 'મુહૂર્ત સમય'],
+    'muhurat_timings_desc' => ['en' => 'Find auspicious timings for marriages, griha pravesh, and more.', 'hi' => 'विवाह, गृह प्रवेश और बहुत कुछ के लिए शुभ समय खोजें।', 'gu' => 'લગ્ન, ગૃહ પ્રવેશ અને વધુ માટે શુભ સમય શોધો.'],
+    'festival_calendar_title' => ['en' => 'Festival Calendar', 'hi' => 'त्योहार कैलेंडर', 'gu' => 'તહેવાર કેલેન્ડર'],
+    'festival_calendar_desc' => ['en' => 'Complete Hindu festival calendar with dates and descriptions.', 'hi' => 'तिथियों और विवरणों के साथ पूर्ण हिंदू त्योहार कैलेंडर।', 'gu' => 'તારીખો અને વર્ણનો સાથે સંપૂર્ણ હિન્દુ તહેવાર કેલેન્ડર.'],
+    'pdf_downloads_title' => ['en' => 'PDF Downloads', 'hi' => 'पीडीएफ डाउनलोड', 'gu' => 'પીડીએફ ડાઉનલોડ'],
+    'pdf_downloads_desc' => ['en' => 'Download detailed Panchang data as beautifully formatted PDFs.', 'hi' => 'सुंदर ढंग से स्वरूपित पीडीएफ के रूप में विस्तृत पंचांग डेटा डाउनलोड करें।', 'gu' => 'સુંદર રીતે ફોર્મેટ કરેલ પીડીએફ તરીકે વિગતવાર પંચાંગ ડેટા ડાઉનલોડ કરો.'],
+
+    'send_message_title' => ['en' => 'Send a Message', 'hi' => 'एक संदेश भेजें', 'gu' => 'એક સંદેશ મોકલો'],
+    'enter_your_name' => ['en' => 'Enter your name', 'hi' => 'अपना नाम दर्ज करें', 'gu' => 'તમારું નામ દાખલ કરો'],
+    'enter_your_email' => ['en' => 'Enter your email', 'hi' => 'अपना ईमेल दर्ज करें', 'gu' => 'તમારું ઈમેલ દાખલ કરો'],
+    'enter_phone_number' => ['en' => 'Enter your phone number', 'hi' => 'अपना फोन नंबर दर्ज करें', 'gu' => 'તમારો ફોન નંબર દાખલ કરો'],
+    'write_message' => ['en' => 'Write your message...', 'hi' => 'अपना संदेश लिखें...', 'gu' => 'તમારો સંદેશ લખો...'],
+    'get_in_touch_title' => ['en' => 'Get in Touch', 'hi' => 'संपर्क करें', 'gu' => 'સંપર્ક કરો'],
+    'contact_reach_out' => ['en' => 'Feel free to reach out to us for any queries about Panchang, Muhurat, or Vastu consultations.', 'hi' => 'पंचांग, मुहूर्त या वास्तु परामर्श के बारे में किसी भी प्रश्न के लिए बेझिझक हमसे संपर्क करें।', 'gu' => 'પંચાંગ, મુહૂર્ત અથવા વાસ્તુ પરામર્શ વિશે કોઈપણ પ્રશ્નો માટે નિઃસંકોચ અમારો સંપર્ક કરો.'],
+
+    'our_publications' => ['en' => 'Our Publications', 'hi' => 'हमारे प्रकाशन', 'gu' => 'અમારા પ્રકાશનો'],
+    'explore_books' => ['en' => 'Explore our collection of Vedic astrology books and guides', 'hi' => 'वैदिक ज्योतिष पुस्तकों और मार्गदर्शकों के हमारे संग्रह का अन्वेषण करें', 'gu' => 'વૈદિક જ્યોતિષ પુસ્તકો અને માર્ગદર્શિકાઓના અમારા સંગ્રહનું અન્વેષણ કરો'],
+    'coming_soon_badge' => ['en' => 'Coming Soon', 'hi' => 'जल्द आ रहा है', 'gu' => 'ટૂંક સમયમાં આવી રહ્યું છે'],
+    'download_pdf_btn' => ['en' => 'Download PDF', 'hi' => 'पीडीएफ डाउनलोड करें', 'gu' => 'પીડીએફ ડાઉનલોડ કરો'],
+    'pdf_coming_soon' => ['en' => 'PDF Coming Soon', 'hi' => 'पीडीएफ जल्द आ रहा है', 'gu' => 'પીડીએફ ટૂંક સમયમાં આવી રહ્યું છે'],
+    'subscribe_to_download' => ['en' => 'Subscribe to Download', 'hi' => 'डाउनलोड करने के लिए सदस्यता लें', 'gu' => 'ડાઉનલોડ કરવા માટે સબ્સ્ક્રાઇબ કરો'],
+    'choose_plan_below' => ['en' => 'Choose a plan below.', 'hi' => 'नीचे एक योजना चुनें।', 'gu' => 'નીચે એક યોજના પસંદ કરો.'],
+    'currently_subscribed' => ['en' => 'You are currently subscribed!', 'hi' => 'आपने वर्तमान में सदस्यता ली हुई है!', 'gu' => 'તમે હાલમાં સબ્સ્ક્રાઇબ કરેલ છો!'],
+    'plan_label' => ['en' => 'Plan:', 'hi' => 'योजना:', 'gu' => 'યોજના:'],
+    'valid_until_label' => ['en' => 'Valid until:', 'hi' => 'तक वैध:', 'gu' => 'સુધી માન્ય:'],
+    'go_to_home' => ['en' => 'Go to Home', 'hi' => 'होम पर जाएं', 'gu' => 'હોમ પર જાઓ'],
+    'unlock_premium_access' => ['en' => 'Unlock premium access to Panchang PDFs and detailed Muhurat calendar', 'hi' => 'पंचांग पीडीएफ और विस्तृत मुहूर्त कैलेंडर तक प्रीमियम पहुंच को अनलॉक करें', 'gu' => 'પંચાંગ પીડીએફ અને વિગતવાર મુહૂર્ત કેલેન્ડરની પ્રીમિયમ ઍક્સેસ અનલૉક કરો'],
+    'login_register_to_subscribe' => ['en' => 'Please login or register first to subscribe.', 'hi' => 'सदस्यता लेने के लिए कृपया पहले लॉगिन या पंजीकरण करें।', 'gu' => 'સબ્સ્ક્રાઇબ કરવા માટે કૃપા કરીને પહેલા લોગિન અથવા રજિસ્ટર કરો.'],
+    'monthly_price' => ['en' => '₹99/month', 'hi' => '₹99/माह', 'gu' => '₹99/મહિનો'],
+    'daily_panchang_details' => ['en' => 'Daily Panchang Details', 'hi' => 'दैनिक पंचांग विवरण', 'gu' => 'દૈનિક પંચાંગ વિગતો'],
+    'panchang_pdf_download' => ['en' => 'Panchang PDF Download', 'hi' => 'पंचांग पीडीएफ डाउनलोड', 'gu' => 'પંચાંગ પીડીએફ ડાઉનલોડ'],
+    'muhurat_calendar_access' => ['en' => 'Muhurat Calendar Access', 'hi' => 'मुहूर्त कैलेंडर पहुंच', 'gu' => 'મુહૂર્ત કેલેન્ડર ઍક્સેસ'],
+    'detailed_muhurat_info' => ['en' => 'Detailed Muhurat Info', 'hi' => 'विस्तृत मुहूर्त जानकारी', 'gu' => 'વિગતવાર મુહૂર્ત માહિતી'],
+    'email_support' => ['en' => 'Email Support', 'hi' => 'ईमेल समर्थन', 'gu' => 'ઈમેલ સપોર્ટ'],
+    'subscribe_monthly' => ['en' => 'Subscribe Monthly', 'hi' => 'मासिक सदस्यता लें', 'gu' => 'માસિક સબ્સ્ક્રાઇબ કરો'],
+    'login_to_subscribe' => ['en' => 'Login to Subscribe', 'hi' => 'सदस्यता लेने के लिए लॉगिन करें', 'gu' => 'સબ્સ્ક્રાઇબ કરવા માટે લોગિન કરો'],
+    'yearly_price' => ['en' => '₹799/year', 'hi' => '₹799/वर्ष', 'gu' => '₹799/વર્ષ'],
+    'everything_in_monthly' => ['en' => 'Everything in Monthly', 'hi' => 'मासिक में सब कुछ', 'gu' => 'માસિકમાં બધું'],
+    'save_per_year' => ['en' => 'Save ₹389 per year', 'hi' => 'प्रति वर्ष ₹389 बचाएं', 'gu' => 'દર વર્ષે ₹389 બચાવો'],
+    'all_panchang_pdfs' => ['en' => 'All Panchang PDFs', 'hi' => 'सभी पंचांग पीडीएफ', 'gu' => 'બધા પંચાંગ પીડીએફ'],
+    'full_muhurat_calendar' => ['en' => 'Full Muhurat Calendar', 'hi' => 'पूर्ण मुहूर्त कैलेंडर', 'gu' => 'સંપૂર્ણ મુહૂર્ત કેલેન્ડર'],
+    'priority_support' => ['en' => 'Priority Support', 'hi' => 'प्राथमिकता समर्थन', 'gu' => 'પ્રાધાન્યતા સપોર્ટ'],
+    'festival_reminders' => ['en' => 'Festival Reminders', 'hi' => 'त्योहार अनुस्मारक', 'gu' => 'તહેવાર રિમાઇન્ડર'],
+    'subscribe_yearly' => ['en' => 'Subscribe Yearly', 'hi' => 'वार्षिक सदस्यता लें', 'gu' => 'વાર્ષિક સબ્સ્ક્રાઇબ કરો'],
+    'pdf_features' => ['en' => 'PDF Downloads', 'hi' => 'पीडीएफ डाउनलोड', 'gu' => 'પીડીએફ ડાઉનલોડ'],
+    'pdf_features_desc' => ['en' => 'Download panchang data as PDF for offline reference', 'hi' => 'ऑफ़लाइन संदर्भ के लिए पंचांग डेटा पीडीएफ के रूप में डाउनलोड करें', 'gu' => 'ઑફલાઇન સંદર્ભ માટે પંચાંગ ડેટા પીડીએફ તરીકે ડાઉનલોડ કરો'],
+    'muhurat_features' => ['en' => 'Muhurat Calendar', 'hi' => 'मुहूर्त कैलेंडर', 'gu' => 'મુહૂર્ત કેલેન્ડર'],
+    'muhurat_features_desc' => ['en' => 'Access detailed muhurat information with calendar view', 'hi' => 'कैलेंडर दृश्य के साथ विस्तृत मुहूर्त जानकारी तक पहुंचें', 'gu' => 'કેલેન્ડર દૃશ્ય સાથે વિગતવાર મુહૂર્ત માહિતી ઍક્સેસ કરો'],
+    'premium_support_features' => ['en' => 'Premium Support', 'hi' => 'प्रीमियम समर्थन', 'gu' => 'પ્રીમિયમ સપોર્ટ'],
+    'premium_support_desc' => ['en' => 'Get priority email support for all your queries', 'hi' => 'अपने सभी प्रश्नों के लिए प्राथमिकता ईमेल समर्थन प्राप्त करें', 'gu' => 'તમારા બધા પ્રશ્નો માટે પ્રાધાન્યતા ઈમેલ સપોર્ટ મેળવો'],
+
+    'gallery_coming_soon' => ['en' => 'Images Coming Soon', 'hi' => 'चित्र जल्द आ रहे हैं', 'gu' => 'છબીઓ ટૂંક સમયમાં આવી રહી છે'],
+    'gallery_coming_soon_desc' => ['en' => 'Beautiful images will be added here soon.', 'hi' => 'खूबसूरत चित्र जल्द ही यहां जोड़े जाएंगे।', 'gu' => 'સુંદર છબીઓ ટૂંક સમયમાં અહી ઉમેરવામાં આવશે.'],
+    'no_books_found' => ['en' => 'No books available at the moment.', 'hi' => 'फिलहाल कोई किताब उपलब्ध नहीं है।', 'gu' => 'હાલમાં કોઈ પુસ્તક ઉપલબ્ધ નથી.'],
+
+    'welcome_back_msg' => ['en' => 'Welcome back, %s! Logged in successfully.', 'hi' => 'वापस स्वागत है, %s! सफलतापूर्वक लॉगिन हुआ।', 'gu' => 'પાછા આવ્યા, %s! સફળતાપૂર્વક લોગિન થયું.'],
+    'account_created' => ['en' => 'Account created successfully! Please login.', 'hi' => 'खाता सफलतापूर्वक बनाया गया! कृपया लॉगिन करें।', 'gu' => 'એકાઉન્ટ સફળતાપૂર્વક બનાવ્યું! કૃપા કરીને લોગિન કરો.'],
+    'invalid_credentials' => ['en' => 'Invalid email or password.', 'hi' => 'अमान्य ईमेल या पासवर्ड।', 'gu' => 'અમાન્ય ઈમેલ અથવા પાસવર્ડ.'],
+    'fill_all_fields' => ['en' => 'Please fill in all fields.', 'hi' => 'कृपया सभी फ़ील्ड भरें।', 'gu' => 'કૃપા કરીને બધા ક્ષેત્રો ભરો.'],
+    'passwords_not_match' => ['en' => 'Passwords do not match.', 'hi' => 'पासवर्ड मेल नहीं खाते।', 'gu' => 'પાસવર્ડ મેળ ખાતો નથી.'],
+    'password_min_length' => ['en' => 'Password must be at least 6 characters.', 'hi' => 'पासवर्ड कम से कम 6 अक्षर का होना चाहिए।', 'gu' => 'પાસવર્ડ ઓછામાં ઓછા 6 અક્ષરોનો હોવો જોઈએ.'],
+    'email_exists' => ['en' => 'An account with this email already exists.', 'hi' => 'इस ईमेल से एक खाता पहले से मौजूद है।', 'gu' => 'આ ઈમેલ સાથે એકાઉન્ટ પહેલેથી અસ્તિત્વમાં છે.'],
+    'registration_failed' => ['en' => 'Registration failed. Please try again.', 'hi' => 'रजिस्ट्रेशन विफल। कृपया पुनः प्रयास करें।', 'gu' => 'રજિસ્ટ્રેશન નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.'],
+    'fill_required_fields' => ['en' => 'Please fill in all required fields.', 'hi' => 'कृपया सभी आवश्यक फ़ील्ड भरें।', 'gu' => 'કૃપા કરીને બધા જરૂરી ક્ષેત્રો ભરો.'],
+    'na' => ['en' => 'NA', 'hi' => 'NA', 'gu' => 'NA'],
+
+    // Ayan (DB values)
+    'ઉત્તરાયણ' => ['en' => 'Uttarayan', 'hi' => 'उत्तरायण', 'gu' => 'ઉત્તરાયણ'],
+    'દક્ષિણાયણ' => ['en' => 'Dakshinayan', 'hi' => 'दक्षिणायण', 'gu' => 'દક્ષિણાયણ'],
+
+    // Gujarati Months (DB values)
+    'ફાગણ' => ['en' => 'Fagan', 'hi' => 'फागण', 'gu' => 'ફાગણ'],
+    'ચૈત્ર' => ['en' => 'Chaitra', 'hi' => 'चैत्र', 'gu' => 'ચૈત્ર'],
+    'વૈશાખ' => ['en' => 'Vaishakh', 'hi' => 'वैशाख', 'gu' => 'વૈશાખ'],
+    'જ્યેષ્ઠ' => ['en' => 'Jyeshtha', 'hi' => 'ज्येष्ठ', 'gu' => 'જ્યેષ્ઠ'],
+    'આષાઢ' => ['en' => 'Ashadh', 'hi' => 'आषाढ़', 'gu' => 'આષાઢ'],
+    'શ્રાવણ' => ['en' => 'Shravan', 'hi' => 'श्रावण', 'gu' => 'શ્રાવણ'],
+    'ભાદરવો' => ['en' => 'Bhadarvo', 'hi' => 'भाद्रपद', 'gu' => 'ભાદરવો'],
+    'આસો' => ['en' => 'Aso', 'hi' => 'आश्विन', 'gu' => 'આસો'],
+    'કાર્તક' => ['en' => 'Kartik', 'hi' => 'कार्तिक', 'gu' => 'કાર્તક'],
+    'માગશર' => ['en' => 'Magshar', 'hi' => 'मार्गशीर्ष', 'gu' => 'માગશર'],
+    'પોશ' => ['en' => 'Posh', 'hi' => 'पौष', 'gu' => 'પોશ'],
+    'માહા' => ['en' => 'Maha', 'hi' => 'माघ', 'gu' => 'માહા'],
+
+    // Day Names (DB values)
+    'સોમવાર' => ['en' => 'Monday', 'hi' => 'सोमवार', 'gu' => 'સોમવાર'],
+    'મંગળવાર' => ['en' => 'Tuesday', 'hi' => 'मंगलवार', 'gu' => 'મંગળવાર'],
+    'બુધવાર' => ['en' => 'Wednesday', 'hi' => 'बुधवार', 'gu' => 'બુધવાર'],
+    'ગુરુવાર' => ['en' => 'Thursday', 'hi' => 'गुरुवार', 'gu' => 'ગુરુવાર'],
+    'શુક્રવાર' => ['en' => 'Friday', 'hi' => 'शुक्रवार', 'gu' => 'શુક્રવાર'],
+    'શનિવાર' => ['en' => 'Saturday', 'hi' => 'शनिवार', 'gu' => 'શનિવાર'],
+    'રવિવાર' => ['en' => 'Sunday', 'hi' => 'रविवार', 'gu' => 'રવિવાર'],
+
+    // Yoga (DB values)
+    'વિષ્કંભ' => ['en' => 'Vishkambha', 'hi' => 'विष्कम्भ', 'gu' => 'વિષ્કંભ'],
+    'પ્રીતિ' => ['en' => 'Priti', 'hi' => 'प्रीति', 'gu' => 'પ્રીતિ'],
+    'આયુષ્માન' => ['en' => 'Ayushman', 'hi' => 'आयुष्मान', 'gu' => 'આયુષ્માન'],
+    'સૌભાગ્ય' => ['en' => 'Saubhagya', 'hi' => 'सौभाग्य', 'gu' => 'સૌભાગ્ય'],
+    'શોભન' => ['en' => 'Shobhana', 'hi' => 'शोभन', 'gu' => 'શોભન'],
+    'અતિગંડ' => ['en' => 'Atiganda', 'hi' => 'अतिगण्ड', 'gu' => 'અતિગંડ'],
+    'સુકર્મન' => ['en' => 'Sukarman', 'hi' => 'सुकर्मा', 'gu' => 'સુકર્મન'],
+    'ધૃતિ' => ['en' => 'Dhriti', 'hi' => 'धृति', 'gu' => 'ધૃતિ'],
+    'શૂલ' => ['en' => 'Shula', 'hi' => 'शूल', 'gu' => 'શૂલ'],
+    'ગંડ' => ['en' => 'Ganda', 'hi' => 'गण्ड', 'gu' => 'ગંડ'],
+    'વૃદ્ધિ' => ['en' => 'Vriddhi', 'hi' => 'वृद्धि', 'gu' => 'વૃદ્ધિ'],
+    'ધ્રુવ' => ['en' => 'Dhruva', 'hi' => 'ध्रुव', 'gu' => 'ધ્રુવ'],
+    'વ્યાઘાત' => ['en' => 'Vyaghata', 'hi' => 'व्याघात', 'gu' => 'વ્યાઘાત'],
+    'હર્ષણ' => ['en' => 'Harshana', 'hi' => 'हर्षण', 'gu' => 'હર્ષણ'],
+    'વજ્ર' => ['en' => 'Vajra', 'hi' => 'वज्र', 'gu' => 'વજ્ર'],
+    'સિદ્ધિ' => ['en' => 'Siddhi', 'hi' => 'सिद्धि', 'gu' => 'સિદ્ધિ'],
+    'વ્યતિપાત' => ['en' => 'Vyatipata', 'hi' => 'व्यतीपात', 'gu' => 'વ્યતિપાત'],
+    'વરીયાન' => ['en' => 'Variyana', 'hi' => 'वरीयान', 'gu' => 'વરીયાન'],
+    'પરિઘ' => ['en' => 'Parigha', 'hi' => 'परिघ', 'gu' => 'પરિઘ'],
+    'શિવ' => ['en' => 'Shiva', 'hi' => 'शिव', 'gu' => 'શિવ'],
+    'સિદ્ધ' => ['en' => 'Siddha', 'hi' => 'सिद्ध', 'gu' => 'સિદ્ધ'],
+    'સાધ્ય' => ['en' => 'Sadhya', 'hi' => 'साध्य', 'gu' => 'સાધ્ય'],
+    'શુભ' => ['en' => 'Shubha', 'hi' => 'शुभ', 'gu' => 'શુભ'],
+    'શુકલ' => ['en' => 'Shukla', 'hi' => 'शुक्ल', 'gu' => 'શુકલ'],
+    'બ્રહ્મ' => ['en' => 'Brahma', 'hi' => 'ब्रह्म', 'gu' => 'બ્રહ્મ'],
+    'ઇન્દ્ર' => ['en' => 'Indra', 'hi' => 'इन्द्र', 'gu' => 'ઇન્દ્ર'],
+    'વૈદૃતિ' => ['en' => 'Vaidhriti', 'hi' => 'वैधृति', 'gu' => 'વૈદૃતિ'],
+
+    // Karana (DB values)
+    'બવ' => ['en' => 'Bava', 'hi' => 'बव', 'gu' => 'બવ'],
+    'બાળવ' => ['en' => 'Balava', 'hi' => 'बालव', 'gu' => 'બાળવ'],
+    'કૌલવ' => ['en' => 'Kaulava', 'hi' => 'कौलव', 'gu' => 'કૌલવ'],
+    'તૈતિલ' => ['en' => 'Taitila', 'hi' => 'तैतिल', 'gu' => 'તૈતિલ'],
+    'ગારા' => ['en' => 'Gara', 'hi' => 'गर', 'gu' => 'ગારા'],
+    'વાણિજ' => ['en' => 'Vanija', 'hi' => 'वणिज', 'gu' => 'વાણિજ'],
+    'વિષ્ઠિ' => ['en' => 'Vishti', 'hi' => 'विष्टि', 'gu' => 'વિષ્ઠિ'],
+    'શકુની' => ['en' => 'Shakuni', 'hi' => 'शकुनि', 'gu' => 'શકુની'],
+    'ચતુષ્પદ' => ['en' => 'Chatushpada', 'hi' => 'चतुष्पद', 'gu' => 'ચતુષ્પદ'],
+    'નાગ' => ['en' => 'Naga', 'hi' => 'नाग', 'gu' => 'નાગ'],
+    'કિંષ્ટુઘ્ન' => ['en' => 'Kimstughna', 'hi' => 'किंस्तुघ्न', 'gu' => 'કિંષ્ટુઘ્ન'],
 ];
 
-// Helper function to get translation
 function t($key) {
     global $translations, $lang;
     $key = strtolower(trim((string)$key));
     if (isset($translations[$key][$lang])) {
         return $translations[$key][$lang];
     }
-    // Fallback to English, then key itself
     return $translations[$key]['en'] ?? $key;
 }
 
-// Helper to format date in selected language
+function t_num($num) {
+    global $lang;
+    $num = (string)$num;
+    if ($lang === 'gu') {
+        $gu_digits = ['૦','૧','૨','૩','૪','૫','૬','૭','૮','૯'];
+        return str_replace(range(0, 9), $gu_digits, $num);
+    } elseif ($lang === 'hi') {
+        $hi_digits = ['०','१','२','३','४','५','६','७','८','९'];
+        return str_replace(range(0, 9), $hi_digits, $num);
+    }
+    return $num;
+}
+
 function t_date($date_str) {
+    global $lang;
+    if (empty($date_str)) return '';
     $time = strtotime($date_str);
     $day = strtolower(date('l', $time));
     $d = date('d', $time);
     $month = strtolower(date('F', $time));
     $year = date('Y', $time);
+    
+    $d_native = t_num((int)$d); 
+    $year_native = t_num($year);
+    
+  
+    if ($lang === 'gu' || $lang === 'hi') {
+       
+        return $d_native . ' ' . t($month) . ' ' . $year_native . ', ' . t($day);
+    }
     
     return t($day) . ', ' . $d . ' ' . t($month) . ' ' . $year;
 }

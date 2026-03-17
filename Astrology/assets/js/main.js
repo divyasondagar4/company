@@ -23,13 +23,13 @@ function showToast(message, type = 'success') {
 
   container.appendChild(toast);
 
-  // Auto dismiss after 4 seconds
+  // Auto dismiss after 5 seconds
   setTimeout(() => {
     if (toast.parentElement) {
       toast.style.animation = 'toastSlideOut 0.3s forwards';
       setTimeout(() => toast.remove(), 300);
     }
-  }, 4000);
+  }, 5000);
 }
 
 // Auto-show toasts from PHP
@@ -38,7 +38,14 @@ document.addEventListener('DOMContentLoaded', function () {
   if (toastData) {
     const msg = toastData.getAttribute('data-message');
     const type = toastData.getAttribute('data-type');
+    const redirect = toastData.getAttribute('data-redirect');
     if (msg) showToast(msg, type);
+    
+    if (redirect) {
+      setTimeout(() => {
+        window.location.href = redirect;
+      }, 5000);
+    }
     toastData.remove();
   }
 });

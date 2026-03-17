@@ -19,6 +19,11 @@ if ($searchDate) {
     $where = "WHERE DATE_FORMAT(panchang_date, '%Y-%m') = '$currentMonth'";
 }
 
+if (!empty($currentLocation)) {
+    $loc = $conn->real_escape_string($currentLocation);
+    $where .= " AND location = '$loc'";
+}
+
 // Pagination — 100 per page
 $perPage = 100;
 $page = max(1, (int)($_GET['page'] ?? 1));
@@ -30,8 +35,6 @@ $totalPages = max(1, ceil($totalRows / $perPage));
 
 $result = $conn->query("SELECT * FROM panchang $where ORDER BY panchang_date ASC LIMIT $perPage OFFSET $offset");
 
-// Check subscription status for detail access
-// Check subscription status for detail access
 $canViewFull = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION['user_id']));
 
 // Monthly Panchang Calendar Data
@@ -43,10 +46,17 @@ $calEnd = date('Y-m-t', strtotime($calStart));
 $today = date('Y-m-d');
 
 // Fetch Panchang for calendar
-$calResult = $conn->query("SELECT * FROM panchang WHERE panchang_date BETWEEN '$calStart' AND '$calEnd' ORDER BY panchang_date ASC");
+$locFilter = !empty($currentLocation) ? "AND location = '" . $conn->real_escape_string($currentLocation) . "'" : "";
+$calResult = $conn->query("SELECT * FROM panchang WHERE panchang_date BETWEEN '$calStart' AND '$calEnd' $locFilter ORDER BY panchang_date ASC");
 $calData = [];
 if ($calResult) {
     while ($cr = $calResult->fetch_assoc()) {
+        $cr['tithi_translated'] = t($cr['tithi']);
+        $cr['nakshatra_translated'] = t($cr['nakshatra']);
+        $cr['yoga_translated'] = t($cr['yoga']);
+        $cr['karana_translated'] = t($cr['karana']);
+        $cr['ayan_translated'] = t($cr['ayan']);
+        $cr['gujarati_month_translated'] = t($cr['gujarati_month']);
         $calData[$cr['panchang_date']] = $cr;
     }
 }
@@ -60,10 +70,6 @@ if ($calFestResult) {
     }
 }
 
-$pv = function($val) {
-    if ($val === null || trim((string)$val) === '') return '<span class="text-muted">N/A</span>';
-    return htmlspecialchars(trim((string)$val));
-};
 ?>
 
 <!-- Subscription Required Modal -->
@@ -83,9 +89,9 @@ $pv = function($val) {
         </p>
         <div class="mt-3">
           <?php if(!isLoggedIn()): ?>
-            <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred me-2"><i class="fas fa-sign-in-alt"></i> <?php echo t('login'); ?></a>
+            <a href="<?php echo SITE_URL; ?>/login?redirect=panchang" class="btn-sacred me-2"><i class="fas fa-sign-in-alt"></i> <?php echo t('login'); ?></a>
           <?php endif; ?>
-          <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred"><i class="fas fa-crown"></i> <?php echo t('subscribe'); ?></a>
+          <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred"><i class="fas fa-crown"></i> <?php echo t('subscribe'); ?></a>
         </div>
       </div>
     </div>
@@ -106,8 +112,7 @@ $pv = function($val) {
   </div>
 </div>
 
-<!-- Monthly Panchang Calendar Section -->
-<section class="panchang-calendar-section">
+<section class="section-sacred">
   <div class="container">
     <div class="section-header animate-on-scroll">
       <h2><i class="fas fa-calendar-alt me-2" style="color:var(--chandan-gold);"></i><?php echo t('monthly_calendar'); ?></h2>
@@ -158,6 +163,20 @@ $pv = function($val) {
           echo "<div class='panchang-cal-cell$isToday' data-date='$dateStr' onclick='toggleCalDate(this)'>";
           echo "<div class='cal-day'>$d</div>";
           if ($tithi) echo "<div class='cal-tithi'>".t($tithi)."</div>";
+          
+          if ($p) {
+              if (!empty($p['sunrise']) && $p['sunrise'] !== '00:00:00') {
+                  echo "<div class='cal-sun-time' style='font-size:0.55rem; color:var(--sacred-saffron); margin-top:2px;'>
+                          <i class='fas fa-sun me-1'></i>" . render_field($p['sunrise'], true) . "
+                        </div>";
+              }
+              if (!empty($p['sunset']) && $p['sunset'] !== '00:00:00') {
+                  echo "<div class='cal-sun-time' style='font-size:0.55rem; color:var(--sacred-maroon);'>
+                          <i class='fas fa-moon me-1'></i>" . render_field($p['sunset'], true) . "
+                        </div>";
+              }
+          }
+
           if (!empty($festivals)) {
               foreach($festivals as $fest) {
                   echo "<div class='cal-festival mt-1' style='font-size:0.6rem; color:var(--sacred-kumkum); background:rgba(192,57,43,0.1); border-radius:3px; padding:2px 4px; text-align:center;'>".t($fest)."</div>";
@@ -174,16 +193,11 @@ $pv = function($val) {
         <p class="text-muted mb-0 fw-semibold"><?php echo t('select_date_prompt'); ?></p>
     </div>
     <div id="calDetailPanel" style="display:none; margin-top:1.5rem;"></div>
-  </div>
-</section>
-
-<section class="section-sacred" style="padding:40px 0;">
-  <div class="container">
 
     <!-- Search Filters -->
-    <div class="sacred-card mb-4" style="height:auto;">
+    <div class="sacred-card my-5" style="height:auto;">
       <div class="row g-3 align-items-end">
-        <div class="col-md-4">
+        <div class="col-md-5">
           <form method="GET" class="form-sacred">
             <label><?php echo t('search_by_date'); ?></label>
             <div class="input-group">
@@ -192,7 +206,7 @@ $pv = function($val) {
             </div>
           </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-5">
           <form method="GET" class="form-sacred">
             <label><?php echo t('search_by_month'); ?></label>
             <div class="input-group">
@@ -201,60 +215,68 @@ $pv = function($val) {
             </div>
           </form>
         </div>
-        <div class="col-md-4 text-end">
-          <?php if($searchDate || $searchMonth): ?>
-            <a href="panchang.php" class="btn-sacred-outline"><i class="fas fa-times"></i> <?php echo t('all_types'); ?></a>
-          <?php endif; ?>
-          <span class="text-muted ms-2" style="font-size:0.85rem;">
-            <?php echo t('showing'); ?> <?php echo min($totalRows, $perPage); ?> <?php echo t('of'); ?> <?php echo $totalRows; ?> <?php echo t('records'); ?>
-          </span>
+        <div class="col-md-2 text-end">
+          <div class="text-muted" style="font-size:0.85rem;">
+            <strong><?php echo $totalRows; ?></strong> <?php echo t('records'); ?>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Panchang Table -->
-    <div class="table-responsive table-sacred">
-      <table class="table table-sm mb-0">
-        <thead>
-          <tr>
-            <th><?php echo t('date'); ?></th>
-            <th><?php echo t('day'); ?></th>
-            <th><?php echo t('sunrise'); ?></th>
-            <th><?php echo t('sunset'); ?></th>
-            <th><?php echo t('tithi'); ?></th>
-            <th><?php echo t('nakshatra'); ?></th>
-            <th><?php echo t('actions'); ?></th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if($result && $result->num_rows > 0): ?>
-            <?php while($r = $result->fetch_assoc()): ?>
+    <?php if(empty($currentLocation)): ?>
+      <div class="text-center py-5 sacred-card mb-4" style="background:var(--chandan-cream); border:2px dashed var(--chandan-gold);">
+        <i class="fas fa-map-marker-alt fa-3x mb-3" style="color:var(--chandan-gold); opacity:0.6;"></i>
+        <h4 style="color:var(--sacred-maroon);"><?php echo t('select_location'); ?></h4>
+        <p class="text-muted mb-4"><?php echo t('select_location_desc') ?? 'Please select a location to view Panchang details.'; ?></p>
+        <a href="#" class="btn-sacred trigger-location-select px-4 py-2">
+          <i class="fas fa-map-marker-alt me-2"></i><?php echo t('select_location'); ?>
+        </a>
+      </div>
+    <?php else: ?>
+      <div class="table-responsive table-sacred">
+        <table class="table table-sm mb-0">
+          <thead>
             <tr>
-              <td style="white-space:nowrap;"><?php echo t_date($r['panchang_date']); ?></td>
-              <td><?php echo t($pv($r['day_name'])); ?></td>
-              <td><?php echo $pv($r['sunrise']); ?></td>
-              <td><?php echo $pv($r['sunset']); ?></td>
-              <td><?php echo t($pv($r['tithi'])); ?></td>
-              <td><?php echo t($pv($r['nakshatra'])); ?></td>
-              <td>
-                <?php if($canViewFull): ?>
-                  <a href="panchang-details.php?date=<?php echo $r['panchang_date']; ?>" class="btn-sacred" style="padding:0.3rem 0.8rem; font-size:0.78rem;">
-                    <i class="fas fa-eye me-1"></i><?php echo t('panchang_details'); ?>
-                  </a>
-                <?php else: ?>
-                  <button type="button" class="btn-sacred" style="padding:0.3rem 0.8rem; font-size:0.78rem;" data-bs-toggle="modal" data-bs-target="#subscribeModal">
-                    <i class="fas fa-lock me-1"></i><?php echo t('panchang_details'); ?>
-                  </button>
-                <?php endif; ?>
-              </td>
+              <th><?php echo t('date'); ?></th>
+              <th><?php echo t('day'); ?></th>
+              <th><?php echo t('sunrise'); ?></th>
+              <th><?php echo t('sunset'); ?></th>
+              <th><?php echo t('tithi'); ?></th>
+              <th><?php echo t('nakshatra'); ?></th>
+              <th><?php echo t('actions'); ?></th>
             </tr>
-            <?php endwhile; ?>
-          <?php else: ?>
-            <tr><td colspan="7" class="text-center py-4"><?php echo t('no_data'); ?></td></tr>
-          <?php endif; ?>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <?php if($result && $result->num_rows > 0): ?>
+              <?php while($r = $result->fetch_assoc()): ?>
+              <tr>
+                <td style="white-space:nowrap;"><?php echo t_date($r['panchang_date']); ?></td>
+                <td><?php echo render_translated_field($r['day_name']); ?></td>
+                <td><?php echo render_field($r['sunrise'], true); ?></td>
+                <td><?php echo render_field($r['sunset'], true); ?></td>
+                <td><?php echo render_translated_field($r['tithi']); ?></td>
+                <td><?php echo render_translated_field($r['nakshatra']); ?></td>
+                <td>
+                  <?php if($canViewFull): ?>
+                    <a href="panchang-details.php?date=<?php echo $r['panchang_date']; ?>" class="btn-sacred" style="padding:0.3rem 0.8rem; font-size:0.78rem;">
+                      <i class="fas fa-eye me-1"></i><?php echo t('panchang_details'); ?>
+                    </a>
+                  <?php else: ?>
+                    <button type="button" class="btn-sacred" style="padding:0.3rem 0.8rem; font-size:0.78rem;" data-bs-toggle="modal" data-bs-target="#subscribeModal">
+                      <i class="fas fa-lock me-1"></i><?php echo t('panchang_details'); ?>
+                    </button>
+                  <?php endif; ?>
+                </td>
+              </tr>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <tr><td colspan="7" class="text-center py-4"><?php echo t('no_data'); ?></td></tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif; ?>
 
     <!-- Prev / Next Pagination -->
     <?php if($totalPages > 1): ?>
@@ -279,6 +301,7 @@ $pv = function($val) {
     </div>
     <?php endif; ?>
 
+  </div>
   </div>
 </section>
 
@@ -310,27 +333,25 @@ function showSelectedDetails() {
   var placeholder = document.getElementById('calDetailPlaceholder');
   var mainTable = document.querySelector('.table-responsive');
   var pagination = document.querySelector('.d-flex.justify-content-between.align-items-center.mt-4');
-  var searchFilters = document.querySelector('.sacred-card.mb-4');
+  var searchFilters = document.querySelector('.sacred-card.my-5');
   
   if (selectedDates.length === 0) {
     panel.style.display = 'none';
     placeholder.style.display = 'block';
-    
-    // Show main table and filters again
     if(mainTable) mainTable.style.display = 'block';
     if(pagination) pagination.style.display = 'flex';
     if(searchFilters) searchFilters.style.display = 'block';
     return;
   }
 
-  // Hide main table and filters when custom dates are selected
   if(mainTable) mainTable.style.display = 'none';
   if(pagination) pagination.style.display = 'none';
   if(searchFilters) searchFilters.style.display = 'none';
 
   placeholder.style.display = 'none';
+  
   var html = '<div class="panchang-detail-panel">';
-  html += '<h4><i class="fas fa-sun me-2" style="color:var(--chandan-gold);"></i><?php echo t('panchang_details'); ?> — ' + selectedDates.length + ' <?php echo t('dates_selected'); ?></h4>';
+  html += '<h4><i class="fas fa-sun me-2" style="color:var(--chandan-gold);"></i><?php echo t('panchang_details'); ?></h4>';
 
   selectedDates.forEach(function(date) {
     var p = calPanchangData[date];
@@ -338,25 +359,26 @@ function showSelectedDetails() {
     var d = new Date(date);
     var dateLabel = d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
 
-    html += '<div style="background:var(--chandan-cream); padding:1rem; border-radius:8px; margin-bottom:0.8rem; border-left:3px solid var(--chandan-gold);">';
-    html += '<strong style="color:var(--sacred-maroon); font-family:Cinzel,serif;">' + dateLabel + '</strong>';
-    html += '<div class="row mt-2" style="font-size:0.85rem;">';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('tithi'); ?>:</span> <strong>' + (p.tithi || 'n/a') + '</strong></div>';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('nakshatra'); ?>:</span> <strong>' + (p.nakshatra || 'n/a') + '</strong></div>';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('yoga'); ?>:</span> <strong>' + (p.yoga || 'n/a') + '</strong></div>';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('karana'); ?>:</span> <strong>' + (p.karana || 'n/a') + '</strong></div>';
-    html += '</div>';
-    html += '<div class="row mt-1" style="font-size:0.85rem;">';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('sunrise'); ?>:</span> ' + (p.sunrise || 'n/a') + '</div>';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('sunset'); ?>:</span> ' + (p.sunset || 'n/a') + '</div>';
-    html += '<div class="col-md-3"><span style="color:var(--text-secondary);"><?php echo t('gujarati_month'); ?>:</span> ' + (p.gujarati_month || 'n/a') + '</div>';
-    html += '<div class="col-md-3 text-end">';
+    html += '<div style="background:var(--chandan-cream); padding:1.2rem; border-radius:12px; margin-bottom:1.5rem; border:1px solid rgba(197,151,59,0.2); box-shadow:0 4px 15px rgba(0,0,0,0.05);">';
+    html += '<div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">';
+    html += '<strong style="color:var(--sacred-maroon); font-family:Cinzel,serif; font-size:1.1rem;">' + dateLabel + '</strong>';
     if (canViewFull) {
         html += '<a href="panchang-details.php?date=' + date + '" class="btn-sacred py-1 px-3" style="font-size:0.75rem;"><i class="fas fa-eye me-1"></i><?php echo t('view_full_details'); ?></a>';
     } else {
         html += '<button type="button" class="btn-sacred py-1 px-3" style="font-size:0.75rem;" data-bs-toggle="modal" data-bs-target="#subscribeModal"><i class="fas fa-lock me-1"></i><?php echo t('view_full_details'); ?></button>';
     }
-    html += '</div></div></div>';
+    html += '</div>';
+
+    html += '<div class="row g-3">';
+    if (p.tithi) html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><?php echo t('tithi'); ?></div><div style="font-weight:700; color:var(--dark-wood);">' + (p.tithi_translated || p.tithi) + '</div></div>';
+    if (p.nakshatra) html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><?php echo t('nakshatra'); ?></div><div style="font-weight:700; color:var(--dark-wood);">' + (p.nakshatra_translated || p.nakshatra) + '</div></div>';
+    if (p.yoga) html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><?php echo t('yoga'); ?></div><div style="font-weight:700; color:var(--dark-wood);">' + (p.yoga_translated || p.yoga) + '</div></div>';
+    if (p.karana) html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><?php echo t('karana'); ?></div><div style="font-weight:700; color:var(--dark-wood);">' + (p.karana_translated || p.karana) + '</div></div>';
+    
+    if (p.sunrise && p.sunrise !== '00:00:00') html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><i class="fas fa-sun me-1"></i><?php echo t('sunrise'); ?></div><div style="font-weight:700; color:var(--sacred-saffron);">' + p.sunrise + '</div></div>';
+    if (p.sunset && p.sunset !== '00:00:00') html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><i class="fas fa-moon me-1"></i><?php echo t('sunset'); ?></div><div style="font-weight:700; color:var(--sacred-maroon);">' + p.sunset + '</div></div>';
+    if (p.gujarati_month) html += '<div class="col-md-3 col-6"><div style="color:var(--text-secondary); font-size:0.75rem; text-transform:uppercase;"><?php echo t('gujarati_month'); ?></div><div style="font-weight:700; color:var(--dark-wood);">' + (p.gujarati_month_translated || p.gujarati_month) + '</div></div>';
+    html += '</div></div>';
   });
 
   html += '</div>';

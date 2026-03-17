@@ -2,8 +2,8 @@
 $pageTitle = 'Muhurat Calendar';
 require_once 'header.php';
 
-// Check subscription/login gating
-$isSubscribed = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION['user_id']));
+// Check subscription/login gating removed - all guests can view
+$isSubscribed = true;
 
 // Navigation Logic
 $calMonth = $_GET['cal_month'] ?? date('Y-m');
@@ -56,7 +56,7 @@ $allData = [
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="<?php echo SITE_URL; ?>/"><?php echo t('home'); ?></a></li>
-        <li class="breadcrumb-item"><a href="<?php echo SITE_URL; ?>/muhurat.php"><?php echo t('muhurat'); ?></a></li>
+        <li class="breadcrumb-item"><a href="<?php echo SITE_URL; ?>/muhurat"><?php echo t('muhurat'); ?></a></li>
         <li class="breadcrumb-item active"><?php echo t('calendar'); ?></li>
       </ol>
     </nav>
@@ -70,7 +70,7 @@ $allData = [
     <div class="alert-sacred mb-4">
       <i class="fas fa-lock"></i>
       <span><?php echo t('muhurat_calendar_lock_desc'); ?></span>
-      <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred ms-auto" style="font-size:0.85rem; padding:0.4rem 1rem;">
+      <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred ms-auto" style="font-size:0.85rem; padding:0.4rem 1rem;">
         <?php echo t('subscribe_now'); ?>
       </a>
     </div>
@@ -176,7 +176,7 @@ var selectedDates = [];
 
 function handleCalClick(cell) {
     if (!isSubscribed) {
-        window.location.href = 'subscribe.php';
+        window.location.href = 'subscribe';
         return;
     }
 
@@ -225,7 +225,7 @@ function updateDetailPanel() {
         if (isSubscribed) {
             html += '<a href="panchang-details.php?date=' + date + '" class="btn-sacred py-1 px-3" style="font-size:0.75rem;"><i class="fas fa-eye me-1"></i>Details</a>';
         } else {
-            html += '<a href="subscribe.php" class="btn-sacred py-1 px-3" style="font-size:0.75rem;"><i class="fas fa-lock me-1"></i>Details</a>';
+            html += '<a href="subscribe" class="btn-sacred py-1 px-3" style="font-size:0.75rem;"><i class="fas fa-lock me-1"></i>Details</a>';
         }
         html += '</div></div>';
 

@@ -10,8 +10,8 @@ if ($type) {
 
 $result = $conn->query("SELECT * FROM muhurat $where ORDER BY muhurat_date ASC");
 
-// Gating check
-$canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION['user_id']));
+// Gating check removed - all guests can view
+$canViewFullToday = true;
 ?>
 
 <!-- Page Header -->
@@ -32,7 +32,7 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
 
     <!-- Type Filters -->
     <div class="text-center mb-4">
-      <a href="<?php echo SITE_URL; ?>/muhurat.php" class="btn-sacred<?php echo !$type ? '' : '-outline'; ?> me-2 mb-2"><?php echo t('all_types'); ?></a>
+      <a href="<?php echo SITE_URL; ?>/muhurat" class="btn-sacred<?php echo !$type ? '' : '-outline'; ?> me-2 mb-2"><?php echo t('all_types'); ?></a>
       <a href="?type=Marriage" class="btn-sacred<?php echo $type=='Marriage' ? '' : '-outline'; ?> me-2 mb-2">
         <i class="fas fa-heart"></i> <?php echo t('marriage'); ?>
       </a>
@@ -49,14 +49,25 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
 
     <!-- Calendar View Link -->
     <div class="text-center mb-4">
-      <a href="<?php echo SITE_URL; ?>/muhurat-calendar.php" class="btn-maroon">
+      <a href="<?php echo SITE_URL; ?>/muhurat-calendar" class="btn-maroon">
         <i class="fas fa-calendar"></i> <?php echo t('view_full_calendar'); ?>
       </a>
     </div>
 
     <!-- Muhurat List -->
     <div class="row g-4">
-      <?php if($result && $result->num_rows > 0): ?>
+      <?php if(empty($currentLocation)): ?>
+        <div class="col-12 text-center py-5">
+          <div class="sacred-card" style="background:var(--chandan-cream); border:2px dashed var(--chandan-gold);">
+            <i class="fas fa-map-marker-alt fa-3x mb-3" style="color:var(--chandan-gold); opacity:0.6;"></i>
+            <h4 style="color:var(--sacred-maroon);"><?php echo t('select_location'); ?></h4>
+            <p class="text-muted mb-4"><?php echo t('select_location_desc') ?? 'Please select a location to view Muhurat details.'; ?></p>
+            <a href="#" class="btn-sacred trigger-location-select px-4 py-2">
+              <i class="fas fa-map-marker-alt me-2"></i><?php echo t('select_location'); ?>
+            </a>
+          </div>
+        </div>
+      <?php elseif($result && $result->num_rows > 0): ?>
         <?php 
           $mCount = 0;
           while($m = $result->fetch_assoc()): 
@@ -88,8 +99,8 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
               </p>
               <p class="mb-2" style="font-size:0.9rem;">
                 <i class="fas fa-clock me-1" style="color:var(--text-secondary);"></i>
-                <?php echo $m['start_time'] ? date('h:i A', strtotime($m['start_time'])) : ''; ?>
-                <?php echo $m['end_time'] ? ' — ' . date('h:i A', strtotime($m['end_time'])) : ''; ?>
+                <?php echo ($m['start_time'] && $m['start_time'] !== '00:00:00') ? date('h:i A', strtotime($m['start_time'])) : ''; ?>
+                <?php echo ($m['end_time'] && $m['end_time'] !== '00:00:00') ? ' — ' . date('h:i A', strtotime($m['end_time'])) : ''; ?>
               </p>
               <?php if($m['description']): ?>
                 <p style="font-size:0.85rem; color:var(--text-secondary);">
@@ -106,7 +117,7 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
               <i class="fas fa-lock fa-3x mb-3" style="color:var(--chandan-gold);"></i>
               <h3><?php echo t('unlock_full_muhurats'); ?></h3>
               <p class="text-muted mb-4"><?php echo t('premium_access_desc'); ?></p>
-              <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred btn-lg px-5"><?php echo t('subscribe_now'); ?></a>
+              <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred btn-lg px-5"><?php echo t('subscribe_now'); ?></a>
             </div>
           </div>
         <?php endif; ?>

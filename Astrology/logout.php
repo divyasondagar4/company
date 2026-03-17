@@ -2,6 +2,7 @@
 session_start();
 session_unset();
 session_destroy();
-header("Location: /vibe_tech_labs/Astrology/");
+require_once __DIR__ . '/config.php';
+header("Location: " . SITE_URL . "/");
 exit();
 ?>

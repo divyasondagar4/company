@@ -16,17 +16,17 @@
       </div>
       <div class="col-lg-2 col-md-6 mb-4">
         <h5><?php echo t('quick_links'); ?></h5>
-        <a href="<?php echo SITE_URL; ?>/panchang.php"><?php echo t('daily_panchang'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/muhurat.php"><?php echo t('muhurat'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/festival-calendar.php"><?php echo t('festival_calendar'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/subscribe.php"><?php echo t('subscribe'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/panchang"><?php echo t('daily_panchang'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/muhurat"><?php echo t('muhurat'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/festival-calendar"><?php echo t('festival_calendar'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/subscribe"><?php echo t('subscribe'); ?></a>
       </div>
       <div class="col-lg-3 col-md-6 mb-4">
         <h5><?php echo t('more'); ?></h5>
-        <a href="<?php echo SITE_URL; ?>/festival-calendar.php"><?php echo t('festival_calendar'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/gallery.php"><?php echo t('gallery'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/contact.php"><?php echo t('contact_us'); ?></a>
-        <a href="<?php echo SITE_URL; ?>/subscribe.php"><?php echo t('subscribe'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/festival-calendar"><?php echo t('festival_calendar'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/gallery"><?php echo t('gallery'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/contact"><?php echo t('contact_us'); ?></a>
+        <a href="<?php echo SITE_URL; ?>/subscribe"><?php echo t('subscribe'); ?></a>
       </div>
       <div class="col-lg-3 col-md-6 mb-4">
         <h5><?php echo t('contact_info'); ?></h5>
@@ -49,3 +49,4 @@
 <script src="<?php echo SITE_URL; ?>/assets/js/main.js"></script>
 </body>
 </html>
+   

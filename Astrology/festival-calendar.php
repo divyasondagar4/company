@@ -5,8 +5,8 @@ require_once 'header.php';
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
 $result = $conn->query("SELECT * FROM festivals WHERE YEAR(festival_date) = $year ORDER BY festival_date ASC");
 
-// Gating check
-$canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION['user_id']));
+// Gating check removed - all guests can view
+$canViewFullToday = true;
 ?>
 
 <!-- Page Header -->
@@ -38,7 +38,16 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
 
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <?php if($result && $result->num_rows > 0): ?>
+        <?php if(empty($currentLocation)): ?>
+          <div class="text-center py-5 sacred-card mb-4" style="background:var(--chandan-cream); border:2px dashed var(--chandan-gold);">
+            <i class="fas fa-map-marker-alt fa-3x mb-3" style="color:var(--chandan-gold); opacity:0.6;"></i>
+            <h4 style="color:var(--sacred-maroon);"><?php echo t('select_location'); ?></h4>
+            <p class="text-muted mb-4"><?php echo t('select_location_desc') ?? 'Please select a location to view Festival details.'; ?></p>
+            <a href="#" class="btn-sacred trigger-location-select px-4 py-2">
+              <i class="fas fa-map-marker-alt me-2"></i><?php echo t('select_location'); ?>
+            </a>
+          </div>
+        <?php elseif($result && $result->num_rows > 0): ?>
           <?php
           $currentMonth = '';
           $fCount = 0;
@@ -82,7 +91,7 @@ $canViewFullToday = isLoggedIn() && (isAdmin() || isSubscribed($conn, $_SESSION[
                 <i class="fas fa-lock fa-3x mb-3" style="color:var(--chandan-gold);"></i>
                 <h3><?php echo t('unlock_all_festivals'); ?></h3>
                 <p class="text-muted mb-4"><?php echo t('premium_access_desc'); ?></p>
-                <a href="<?php echo SITE_URL; ?>/subscribe.php" class="btn-sacred btn-lg px-5"><?php echo t('subscribe_now'); ?></a>
+                <a href="<?php echo SITE_URL; ?>/subscribe" class="btn-sacred btn-lg px-5"><?php echo t('subscribe_now'); ?></a>
               </div>
             </div>
           <?php endif; ?>

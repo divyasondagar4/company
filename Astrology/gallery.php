@@ -41,7 +41,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id DESC");
     <div class="text-center py-5">
       <i class="fas fa-images fa-4x mb-3" style="color:var(--chandan-gold); opacity:0.4;"></i>
       <h4><?php echo t('gallery_coming_soon'); ?></h4>
-      <p class="text-muted">Beautiful images will be added here soon.</p>
+      <p class="text-muted"><?php echo t('gallery_coming_soon_desc'); ?></p>
     </div>
     <?php endif; ?>
   </div>

@@ -1,0 +1,17 @@
+{
+    "noto sans": {
+        "normal": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_normal_1d3fa1de43813f2e3d43c049a3dc3027",
+        "600": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_600_28250d88674528bd3123cc6a87717c32",
+        "bold": "noto_sans_bold_d14bb300c338842261b48b55ff65a0d0"
+    },
+    "noto sans devanagari": {
+        "normal": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_devanagari_normal_32dbad8377a6bc43a2b9183b275065d5",
+        "600": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_devanagari_600_4ff0d6c6bd1eeb8d4992893dc0f4c80d",
+        "bold": "noto_sans_devanagari_bold_3299edb80bd812f725ffa357dbb9cad6"
+    },
+    "noto sans gujarati": {
+        "normal": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_gujarati_normal_2413d211e63cf19ae12d5296d3e98bed",
+        "600": "C:\\xampp\\htdocs\\vibe_tech_labs\\Astrology\\vendor\\dompdf\\dompdf\/lib\/fonts\/noto_sans_gujarati_600_62b754398c81034def60a3d43dabd26a",
+        "bold": "noto_sans_gujarati_bold_866ccad762f978332c1c2f21f570c8fe"
+    }
+}

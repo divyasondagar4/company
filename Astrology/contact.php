@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <h3 class="mb-4"><i class="fas fa-paper-plane me-2" style="color:var(--chandan-gold);"></i><?php echo t('send_message'); ?></h3>
 
           <?php if($success): ?>
-            <div id="toast-data" data-message="<?php echo htmlspecialchars($success); ?>" data-type="success"></div>
+            <div id="toast-data" data-message="<?php echo htmlspecialchars($success); ?>" data-type="success" data-redirect="contact.php"></div>
           <?php endif; ?>
           <?php if($error): ?>
             <div id="toast-data" data-message="<?php echo htmlspecialchars($error); ?>" data-type="error"></div>
@@ -57,19 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="row g-3">
               <div class="col-md-6">
                 <label><?php echo t('full_name'); ?> *</label>
-                <input type="text" name="name" class="form-control" required placeholder="Enter your name">
+                <input type="text" name="name" class="form-control" required placeholder="<?php echo t('enter_your_name'); ?>">
               </div>
               <div class="col-md-6">
                 <label><?php echo t('email'); ?> *</label>
-                <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+                <input type="email" name="email" class="form-control" required placeholder="<?php echo t('enter_your_email'); ?>">
               </div>
               <div class="col-12">
                 <label><?php echo t('phone'); ?></label>
-                <input type="tel" name="phone" class="form-control" placeholder="Enter your phone number">
+                <input type="tel" name="phone" class="form-control" placeholder="<?php echo t('enter_phone_number'); ?>">
               </div>
               <div class="col-12">
                 <label><?php echo t('message'); ?> *</label>
-                <textarea name="message" class="form-control" rows="5" required placeholder="Write your message..."></textarea>
+                <textarea name="message" class="form-control" rows="5" required placeholder="<?php echo t('write_message'); ?>"></textarea>
               </div>
               <div class="col-12">
                 <button type="submit" class="btn-sacred">
@@ -84,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Contact Info -->
       <div class="col-lg-5">
         <div class="contact-info-card">
-          <h4><i class="fas fa-info-circle me-2"></i><?php echo t('get_in_touch'); ?></h4>
-          <p style="margin-bottom:2rem;">Feel free to reach out to us for any queries about Panchang, Muhurat, or Vastu consultations.</p>
+          <h4><i class="fas fa-info-circle me-2"></i><?php echo t('get_in_touch_title'); ?></h4>
+          <p style="margin-bottom:2rem;"><?php echo t('contact_reach_out'); ?></p>
 
           <div class="contact-info-item">
             <div class="icon"><i class="fas fa-envelope"></i></div>

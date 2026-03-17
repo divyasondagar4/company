@@ -64,32 +64,28 @@ if (isLoggedIn()) {
     <?php if($msg === 'subscription_required'): ?>
     <div class="alert-sacred mb-4">
       <i class="fas fa-lock"></i>
-      <span>A subscription is required to access this feature. Choose a plan below.</span>
+      <span><?php echo t('choose_plan_below'); ?></span>
     </div>
     <?php endif; ?>
 
     <?php if($success): ?>
-    <div class="alert-sacred alert-success mb-4">
-      <i class="fas fa-check-circle"></i> <?php echo $success; ?>
-    </div>
+    <div id="toast-data" data-message="<?php echo htmlspecialchars($success); ?>" data-type="success" data-redirect="subscribe.php"></div>
     <?php endif; ?>
     <?php if($error): ?>
-    <div class="alert-sacred alert-danger mb-4">
-      <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
-    </div>
+    <div id="toast-data" data-message="<?php echo htmlspecialchars($error); ?>" data-type="error"></div>
     <?php endif; ?>
 
     <!-- Current Subscription Status -->
     <?php if($currentSub): ?>
     <div class="sacred-card mb-4 text-center" style="border-color:var(--chandan-gold);">
       <i class="fas fa-check-circle fa-3x mb-3" style="color:var(--chandan-gold);"></i>
-      <h4>You are currently subscribed!</h4>
+      <h4><?php echo t('currently_subscribed'); ?></h4>
       <p class="text-muted">
-        Plan: <strong><?php echo ucfirst($currentSub['plan']); ?></strong> |
-        Valid until: <strong><?php echo date('d M Y', strtotime($currentSub['end_date'])); ?></strong>
+        <?php echo t('plan_label'); ?> <strong><?php echo ucfirst($currentSub['plan']); ?></strong> |
+        <?php echo t('valid_until_label'); ?> <strong><?php echo date('d M Y', strtotime($currentSub['end_date'])); ?></strong>
       </p>
       <a href="<?php echo SITE_URL; ?>/" class="btn-sacred">
-        <i class="fas fa-home"></i> Go to Home
+        <i class="fas fa-home"></i> <?php echo t('go_to_home'); ?>
       </a>
     </div>
     <?php else: ?>
@@ -97,13 +93,12 @@ if (isLoggedIn()) {
     <div class="section-header">
       <h2><?php echo t('choose_plan'); ?></h2>
       <div class="header-line"></div>
-      <p>Unlock premium access to Panchang PDFs and detailed Muhurat calendar</p>
+      <p><?php echo t('unlock_premium_access'); ?></p>
     </div>
 
     <?php if(!isLoggedIn()): ?>
     <div class="text-center mb-4">
-      <p class="text-muted">Please <a href="<?php echo SITE_URL; ?>/login.php" style="font-weight:600;">login</a> or
-      <a href="<?php echo SITE_URL; ?>/register.php" style="font-weight:600;">register</a> first to subscribe.</p>
+      <p class="text-muted"><?php echo t('login_register_to_subscribe'); ?></p>
     </div>
     <?php endif; ?>
 
@@ -112,24 +107,24 @@ if (isLoggedIn()) {
       <div class="col-md-5">
         <div class="plan-card">
           <h3><?php echo t('monthly'); ?></h3>
-          <div class="plan-price">₹99<span>/month</span></div>
+          <div class="plan-price"><?php echo t('monthly_price'); ?></div>
           <ul class="plan-features">
-            <li><i class="fas fa-check"></i> Daily Panchang Details</li>
-            <li><i class="fas fa-check"></i> Panchang PDF Download</li>
-            <li><i class="fas fa-check"></i> Muhurat Calendar Access</li>
-            <li><i class="fas fa-check"></i> Detailed Muhurat Info</li>
-            <li><i class="fas fa-check"></i> Email Support</li>
+            <li><i class="fas fa-check"></i> <?php echo t('daily_panchang_details'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('panchang_pdf_download'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('muhurat_calendar_access'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('detailed_muhurat_info'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('email_support'); ?></li>
           </ul>
           <?php if(isLoggedIn()): ?>
           <form method="POST">
             <input type="hidden" name="plan" value="monthly">
             <button type="submit" class="btn-sacred-outline w-100 justify-content-center">
-              <i class="fas fa-crown"></i> Subscribe Monthly
+              <i class="fas fa-crown"></i> <?php echo t('subscribe_monthly'); ?>
             </button>
           </form>
           <?php else: ?>
-          <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred-outline w-100 justify-content-center">
-            <i class="fas fa-sign-in-alt"></i> Login to Subscribe
+          <a href="<?php echo SITE_URL; ?>/login" class="btn-sacred-outline w-100 justify-content-center">
+            <i class="fas fa-sign-in-alt"></i> <?php echo t('login_to_subscribe'); ?>
           </a>
           <?php endif; ?>
         </div>
@@ -139,25 +134,25 @@ if (isLoggedIn()) {
       <div class="col-md-5">
         <div class="plan-card featured">
           <h3><?php echo t('yearly'); ?></h3>
-          <div class="plan-price">₹799<span>/year</span></div>
+          <div class="plan-price"><?php echo t('yearly_price'); ?></div>
           <ul class="plan-features">
-            <li><i class="fas fa-check"></i> Everything in Monthly</li>
-            <li><i class="fas fa-check"></i> Save ₹389 per year</li>
-            <li><i class="fas fa-check"></i> All Panchang PDFs</li>
-            <li><i class="fas fa-check"></i> Full Muhurat Calendar</li>
-            <li><i class="fas fa-check"></i> Priority Support</li>
-            <li><i class="fas fa-check"></i> Festival Reminders</li>
+            <li><i class="fas fa-check"></i> <?php echo t('everything_in_monthly'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('save_per_year'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('all_panchang_pdfs'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('full_muhurat_calendar'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('priority_support'); ?></li>
+            <li><i class="fas fa-check"></i> <?php echo t('festival_reminders'); ?></li>
           </ul>
           <?php if(isLoggedIn()): ?>
           <form method="POST">
             <input type="hidden" name="plan" value="yearly">
             <button type="submit" class="btn-sacred w-100 justify-content-center">
-              <i class="fas fa-crown"></i> Subscribe Yearly
+              <i class="fas fa-crown"></i> <?php echo t('subscribe_yearly'); ?>
             </button>
           </form>
           <?php else: ?>
-          <a href="<?php echo SITE_URL; ?>/login.php" class="btn-sacred w-100 justify-content-center">
-            <i class="fas fa-sign-in-alt"></i> Login to Subscribe
+          <a href="<?php echo SITE_URL; ?>/login" class="btn-sacred w-100 justify-content-center">
+            <i class="fas fa-sign-in-alt"></i> <?php echo t('login_to_subscribe'); ?>
           </a>
           <?php endif; ?>
         </div>
@@ -168,18 +163,18 @@ if (isLoggedIn()) {
     <div class="row g-4 mt-5">
       <div class="col-md-4 text-center animate-on-scroll">
         <i class="fas fa-file-pdf fa-2x mb-2" style="color:var(--chandan-gold);"></i>
-        <h5>PDF Downloads</h5>
-        <p class="text-muted" style="font-size:0.9rem;">Download panchang data as PDF for offline reference</p>
+        <h5><?php echo t('pdf_features'); ?></h5>
+        <p class="text-muted" style="font-size:0.9rem;"><?php echo t('pdf_features_desc'); ?></p>
       </div>
       <div class="col-md-4 text-center animate-on-scroll">
         <i class="fas fa-calendar-check fa-2x mb-2" style="color:var(--chandan-gold);"></i>
-        <h5>Muhurat Calendar</h5>
-        <p class="text-muted" style="font-size:0.9rem;">Access detailed muhurat information with calendar view</p>
+        <h5><?php echo t('muhurat_features'); ?></h5>
+        <p class="text-muted" style="font-size:0.9rem;"><?php echo t('muhurat_features_desc'); ?></p>
       </div>
       <div class="col-md-4 text-center animate-on-scroll">
         <i class="fas fa-headset fa-2x mb-2" style="color:var(--chandan-gold);"></i>
-        <h5>Premium Support</h5>
-        <p class="text-muted" style="font-size:0.9rem;">Get priority email support for all your queries</p>
+        <h5><?php echo t('premium_support_features'); ?></h5>
+        <p class="text-muted" style="font-size:0.9rem;"><?php echo t('premium_support_desc'); ?></p>
       </div>
     </div>
 
